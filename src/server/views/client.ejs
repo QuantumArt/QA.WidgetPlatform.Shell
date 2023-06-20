@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" href="/favicon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#000" />
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="format-detection" content="telephone=no">
+    <%- helmet && helmet.title %>
+    <%- helmet && helmet.base %>
+    <%- helmet && helmet.bodyAttributes %>
+    <%- helmet && helmet.htmlAttributes %>
+    <%- helmet && helmet.link %>
+    <%- helmet && helmet.meta %>
+    <%- helmet && helmet.noscript %>
+    <%- helmet && helmet.script %>
+    <%- helmet && helmet.style %>
+    <%- styles %>
+  </head>
+  <body>
+    <div id="root"><%- component %></div>
+    <%- scripts %>
+  </body>
+</html>

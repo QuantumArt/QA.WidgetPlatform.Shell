@@ -1,0 +1,13 @@
+{
+  "widgetsPlatform": {
+    "apiUrl": "",
+    "graphql": null,
+    "dnsName": "",
+    "forcedConfigurationOfDynamicModules": { }
+  },
+  "useDynamicModules": false,
+  "ssr": {
+    "active": true,
+    "ttl": 30
+  }
+}

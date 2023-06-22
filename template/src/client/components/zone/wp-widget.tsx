@@ -1,8 +1,8 @@
 import React from 'react';
-import { WidgetDetails, useAppSettingsShell } from '@qp8-widget-platform/shell-core';
+import { WidgetDetails, useAppSettingsShell } from '@quantumart/qp8-widget-platform-shell-core';
 import { ZoneStore } from 'src/client/stores/zone/zone-store';
 import { useWpcStore } from 'src/share/stores/wp-components/wp-component-store';
-import { AbstractItemContext, ZoneStoreContext } from '@qp8-widget-platform/bridge';
+import { AbstractItemContext, ZoneStoreContext } from '@quantumart/qp8-widget-platform-bridge';
 import { AbstractItemStore } from 'src/client/stores/abstract-item/abstract-item-store';
 import { WPItemStore, WPItemStoreContext } from 'src/client/stores/wp-item/wp-item-store';
 

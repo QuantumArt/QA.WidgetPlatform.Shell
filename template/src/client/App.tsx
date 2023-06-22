@@ -6,7 +6,7 @@ import {
   SiteStructureStoreContext,
   AppSettingsShellContext,
   IAppSettingsShell,
-} from '@qp8-widget-platform/shell-core';
+} from '@quantumart/qp8-widget-platform-shell-core';
 import { Loader } from './components/loader/loader';
 import {
   WidgetPlatformStore,
@@ -16,7 +16,7 @@ import {
   IWPComponentStore,
   WPComponentsStoreContext,
 } from 'src/share/stores/wp-components/wp-component-store';
-import { WPApolloClientProvider } from '@qp8-widget-platform/bridge';
+import { WPApolloClientProvider } from '@quantumart/qp8-widget-platform-bridge';
 import './assets/style/style.scss';
 
 interface IProps {

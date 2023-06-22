@@ -5,7 +5,7 @@ import { IComponentInfo } from '../models/component-info';
 import { IWPComponent, WPComponentProps } from '../models/wp-component';
 import { Loader } from 'src/client/components/loader/loader';
 import { NotFoundComponent } from 'src/client/components/not-found/not-found-component';
-import { useAppSettingsShell } from '@qp8-widget-platform/shell-core';
+import { useAppSettingsShell } from '@quantumart/qp8-widget-platform-shell-core';
 import { ApolloClient, NormalizedCacheObject } from '@apollo/client';
 
 export class DynamicWPComponentsStore implements IWPComponentStore {

@@ -1,10 +1,10 @@
-import { BreadcrumbItem, IWPRoutesStore, PageNode } from '@qp8-widget-platform/bridge';
+import { BreadcrumbItem, IWPRoutesStore, PageNode } from '@quantumart/qp8-widget-platform-bridge';
 import {
   SiteNode,
   IAppSettingsShell,
   getBreadcrumbs,
   getSiteMap,
-} from '@qp8-widget-platform/shell-core';
+} from '@quantumart/qp8-widget-platform-shell-core';
 import { WidgetPlatformStore } from 'src/share/stores/widget-platform-context/widget-platform-context-store';
 
 export class WPRoutesStore implements IWPRoutesStore {

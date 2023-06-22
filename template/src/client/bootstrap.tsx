@@ -7,7 +7,7 @@ import { HelmetProvider } from 'react-helmet-async';
 import { BrowserRouter } from 'react-router-dom';
 import { loadSettingsFromFile } from '../utilities/settings-loader';
 import { WidgetPlatformStore } from 'src/share/stores/widget-platform-context/widget-platform-context-store';
-import { WPApiStore, SiteStructureStore, IAppSettingsShell } from '@qp8-widget-platform/shell-core';
+import { WPApiStore, SiteStructureStore, IAppSettingsShell } from '@quantumart/qp8-widget-platform-shell-core';
 import { DynamicWPComponentsStore } from 'src/share/stores/wp-components/realizations/dynamic-wpc-store';
 import { StaticWPComponentsStore } from 'src/share/stores/wp-components/realizations/static-wpc-store';
 import { IWPComponentStore } from 'src/share/stores/wp-components/wp-component-store';

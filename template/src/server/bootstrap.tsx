@@ -3,7 +3,7 @@ import path from 'path';
 import compression from 'compression';
 import fs from 'fs';
 import { ChunkExtractor } from '@loadable/server';
-import { IAppSettingsShell } from '@qp8-widget-platform/shell-core';
+import { IAppSettingsShell } from '@quantumart/qp8-widget-platform-shell-core';
 //import { revalidate } from '@module-federation/utilities';
 
 const port = 3200;

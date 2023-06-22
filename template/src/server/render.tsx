@@ -6,7 +6,7 @@ import { ApolloClient, InMemoryCache, NormalizedCacheObject } from '@apollo/clie
 import { renderToPipeableStream } from 'react-dom/server';
 import { StaticRouter } from 'react-router-dom/server';
 import { HelmetData, HelmetProvider, HelmetServerState } from 'react-helmet-async';
-import { WPApiStore, IAppSettingsShell, SiteStructureStore } from '@qp8-widget-platform/shell-core';
+import { WPApiStore, IAppSettingsShell, SiteStructureStore } from '@quantumart/qp8-widget-platform-shell-core';
 import { IHelmetString, convertHelmetToString } from 'src/utilities/helmet-helpers';
 import { WidgetPlatformStore } from 'src/share/stores/widget-platform-context/widget-platform-context-store';
 import { IWPComponentStore } from 'src/share/stores/wp-components/wp-component-store';

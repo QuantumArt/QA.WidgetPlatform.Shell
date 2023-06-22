@@ -30,7 +30,7 @@ const shared = {
   'react-router-dom': {
     singleton: true,
   },
-  '@qp8-widget-platform/bridge': {
+  '@quantumart/qp8-widget-platform-bridge': {
     singleton: true,
   },
 };

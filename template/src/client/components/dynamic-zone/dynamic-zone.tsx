@@ -9,13 +9,13 @@ import {
   useWPApolloClient,
   useWPRoutesStore,
   useZoneStore,
-} from '@qp8-widget-platform/bridge';
+} from '@quantumart/qp8-widget-platform-bridge';
 import {
   AppSettingsShellContext,
   useAppSettingsShell,
   SiteStructureStoreContext,
   useSiteStructureStore,
-} from '@qp8-widget-platform/shell-core';
+} from '@quantumart/qp8-widget-platform-shell-core';
 import {
   WidgetPlatformStoreContext,
   useWidgetPlatformStore,

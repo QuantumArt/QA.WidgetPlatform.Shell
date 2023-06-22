@@ -1,5 +1,5 @@
 import React from 'react';
-import { WidgetDetails } from '@qp8-widget-platform/shell-core';
+import { WidgetDetails } from '@quantumart/qp8-widget-platform-shell-core';
 
 export class WPItemStore {
   constructor(public readonly zones: Record<string, WidgetDetails[]>) {}

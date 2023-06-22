@@ -9,7 +9,7 @@ import {
   IAppSettingsShell,
   getZones,
   getPage,
-} from '@qp8-widget-platform/shell-core';
+} from '@quantumart/qp8-widget-platform-shell-core';
 import { IWPComponentStore } from '../wp-components/wp-component-store';
 import { ApolloClient, NormalizedCacheObject } from '@apollo/client';
 

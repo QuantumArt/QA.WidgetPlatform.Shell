@@ -1,5 +1,5 @@
-import { IAbstractItem } from '@qp8-widget-platform/bridge';
-import { SiteNode } from '@qp8-widget-platform/shell-core';
+import { IAbstractItem } from '@quantumart/qp8-widget-platform-bridge';
+import { SiteNode } from '@quantumart/qp8-widget-platform-shell-core';
 
 export class AbstractItemStore implements IAbstractItem {
   public readonly id: number;

@@ -5,7 +5,7 @@ import { IWPComponentStore } from '../wp-component-store';
 import { staticModules } from 'src/app-settings-shell/static-wpc-modules';
 import { Loader } from 'src/client/components/loader/loader';
 import { NotFoundComponent } from 'src/client/components/not-found/not-found-component';
-import { useAppSettingsShell } from '@qp8-widget-platform/shell-core';
+import { useAppSettingsShell } from '@quantumart/qp8-widget-platform-shell-core';
 import { ApolloClient, NormalizedCacheObject } from '@apollo/client';
 
 export class StaticWPComponentsStore implements IWPComponentStore {

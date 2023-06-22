@@ -1,6 +1,6 @@
 import React from 'react';
 import { IComponentInfo } from 'src/share/stores/wp-components/models/component-info';
-import { SiteNode, useSiteStructureStore, useAppSettingsShell } from '@qp8-widget-platform/shell-core';
+import { SiteNode, useSiteStructureStore, useAppSettingsShell } from '@quantumart/qp8-widget-platform-shell-core';
 import { useWpcStore } from 'src/share/stores/wp-components/wp-component-store';
 import { Layout } from '../layout/layout';
 import { ZoneStore } from 'src/client/stores/zone/zone-store';
@@ -8,7 +8,7 @@ import {
   AbstractItemContext,
   WPRoutesStoreContext,
   ZoneStoreContext,
-} from '@qp8-widget-platform/bridge';
+} from '@quantumart/qp8-widget-platform-bridge';
 import { useWidgetPlatformStore } from 'src/share/stores/widget-platform-context/widget-platform-context-store';
 import { Loader } from '../loader/loader';
 import { AbstractItemStore } from 'src/client/stores/abstract-item/abstract-item-store';

@@ -1,4 +1,4 @@
-import { WidgetZone } from '@qp8-widget-platform/bridge';
+import { WidgetZone } from '@quantumart/qp8-widget-platform-bridge';
 import React from 'react';
 
 interface IProps {

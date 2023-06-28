@@ -42,18 +42,21 @@ const Page = (props: IProps): JSX.Element => {
     var zones = wpStore.getPreloadZones();
     return zones == undefined ? undefined : new WPItemStore(zones ?? {});
   });
-  const [wpRoutesStore] = React.useState(
+  const wpRoutesStore = React.useMemo(
     () =>
       new WPRoutesStore(appSettingsShell, wpStore, siteStructure.structure, props.node, href ?? ''),
+    [appSettingsShell, wpStore, siteStructure.structure, props.node, href],
   );
   const [abstractItemStore] = React.useState(() => new AbstractItemStore(props.node));
   const [zoneStore] = React.useState(() => new ZoneStore(props.node.id!));
+
+  const tailUrl = wpRoutesStore.getTailUrl();
 
   const wpcStore = useWpcStore();
   const WPComponent = wpcStore.getComponent(props.componentInfo);
 
   const lazyload = async (): Promise<void> => {
-    const allowedSubpage = await wpStore.getAllowedSubpage(props.node, wpRoutesStore.getTailUrl());
+    const allowedSubpage = await wpStore.getAllowedSubpage(props.node, tailUrl);
     setAllowedSubpage(allowedSubpage);
     setWPProps((await wpStore.getData(props.node)) as WPComponentProps);
     setItemStore(new WPItemStore((await wpStore.getZones(href ?? '', props.node.id!)) ?? {}));
@@ -74,8 +77,8 @@ const Page = (props: IProps): JSX.Element => {
         <WPItemStoreContext.Provider value={itemStore}>
           <WPRoutesStoreContext.Provider value={wpRoutesStore}>
             <AbstractItemContext.Provider value={abstractItemStore}>
-              <Layout key={props.node.id}>
-                <WPComponent key={props.node.id} {...wpProps} />
+              <Layout key={`${props.node.id}-${tailUrl}`}>
+                <WPComponent key={`${props.node.id}-${tailUrl}`} {...wpProps} />
               </Layout>
             </AbstractItemContext.Provider>
           </WPRoutesStoreContext.Provider>

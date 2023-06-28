@@ -22,6 +22,7 @@ server.use(
 
 //**** Подготовка layout-а страницы ****/
 server.set('view engine', 'ejs');
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 server.engine('ejs', require('ejs').__express);
 server.set('views', path.join(__dirname, 'views'));
 
@@ -56,7 +57,7 @@ server.get('*', async (req, res) => {
   // });
   res.set('X-Content-Type-Options', 'nosniff');
   if (appsettings.ssr?.active) {
-    // //Кеш страниц, пока не делаем
+    // //Кеш страниц
     // let body: IBodyBuilderResult | undefined = siteCache.get(req.url);
     // if (body == undefined) {
     //   body = await bodyBuilder(req.url, appsettings);

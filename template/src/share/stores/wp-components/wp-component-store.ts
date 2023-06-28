@@ -5,6 +5,7 @@ import { ApolloClient, NormalizedCacheObject } from '@apollo/client';
 
 export interface IWPComponentStore {
   getComponent(info: IComponentInfo): (props: WPComponentProps) => JSX.Element;
+  allowedSubpageHandler(info: IComponentInfo, tailUrl: string): Promise<boolean>;
   getStaticPropsHandler(
     info: IComponentInfo,
     wpProps: { [key: string]: unknown },

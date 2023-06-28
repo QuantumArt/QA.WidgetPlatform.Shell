@@ -1,6 +1,10 @@
 import React from 'react';
 import { IComponentInfo } from 'src/share/stores/wp-components/models/component-info';
-import { SiteNode, useSiteStructureStore, useAppSettingsShell } from '@quantumart/qp8-widget-platform-shell-core';
+import {
+  SiteNode,
+  useSiteStructureStore,
+  useAppSettingsShell,
+} from '@quantumart/qp8-widget-platform-shell-core';
 import { useWpcStore } from 'src/share/stores/wp-components/wp-component-store';
 import { Layout } from '../layout/layout';
 import { ZoneStore } from 'src/client/stores/zone/zone-store';
@@ -16,6 +20,7 @@ import { WPItemStore, WPItemStoreContext } from 'src/client/stores/wp-item/wp-it
 import { WPComponentProps } from 'src/share/stores/wp-components/models/wp-component';
 import { WPRoutesStore } from 'src/client/stores/wp-routes/wp-routes-store';
 import { useHref } from 'src/share/hooks/url-location';
+import { NotFoundComponent } from '../not-found/not-found-component';
 
 interface IProps {
   node: SiteNode;
@@ -30,12 +35,16 @@ const Page = (props: IProps): JSX.Element => {
   const [wpProps, setWPProps] = React.useState(
     () => wpStore.getPreloadData()?.details as WPComponentProps,
   );
+
+  const [allowedSubpage, setAllowedSubpage] = React.useState(wpStore.getPreloadAllowedSubpage);
+
   const [itemStore, setItemStore] = React.useState(() => {
     var zones = wpStore.getPreloadZones();
     return zones == undefined ? undefined : new WPItemStore(zones ?? {});
   });
   const [wpRoutesStore] = React.useState(
-    () => new WPRoutesStore(appSettingsShell, wpStore, siteStructure.structure, props.node),
+    () =>
+      new WPRoutesStore(appSettingsShell, wpStore, siteStructure.structure, props.node, href ?? ''),
   );
   const [abstractItemStore] = React.useState(() => new AbstractItemStore(props.node));
   const [zoneStore] = React.useState(() => new ZoneStore(props.node.id!));
@@ -44,6 +53,8 @@ const Page = (props: IProps): JSX.Element => {
   const WPComponent = wpcStore.getComponent(props.componentInfo);
 
   const lazyload = async (): Promise<void> => {
+    const allowedSubpage = await wpStore.getAllowedSubpage(props.node, wpRoutesStore.getTailUrl());
+    setAllowedSubpage(allowedSubpage);
     setWPProps((await wpStore.getData(props.node)) as WPComponentProps);
     setItemStore(new WPItemStore((await wpStore.getZones(href ?? '', props.node.id!)) ?? {}));
   };
@@ -52,6 +63,10 @@ const Page = (props: IProps): JSX.Element => {
       lazyload();
     }
   }, []);
+
+  if (!allowedSubpage && wpRoutesStore.getTailUrl().length > 0) {
+    return <NotFoundComponent />;
+  }
 
   if (!!wpProps && !!itemStore) {
     return (

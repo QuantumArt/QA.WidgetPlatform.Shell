@@ -44,6 +44,19 @@ export class DynamicWPComponentsStore implements IWPComponentStore {
     };
   };
 
+  public allowedSubpageHandler = async (
+    info: IComponentInfo,
+    tailUrl: string,
+  ): Promise<boolean> => {
+    try {
+      var wpComponent = await this.getComponentForEnvironment(info)();
+      return !!wpComponent.allowedSubpage ? wpComponent.allowedSubpage(tailUrl) : false;
+    } catch (ex) {
+      console.error(ex);
+      return false;
+    }
+  };
+
   public getStaticPropsHandler = async (
     info: IComponentInfo,
     wpProps: { [key: string]: unknown },

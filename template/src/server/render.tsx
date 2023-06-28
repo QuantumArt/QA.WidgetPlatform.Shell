@@ -6,12 +6,17 @@ import { ApolloClient, InMemoryCache, NormalizedCacheObject } from '@apollo/clie
 import { renderToPipeableStream } from 'react-dom/server';
 import { StaticRouter } from 'react-router-dom/server';
 import { HelmetData, HelmetProvider, HelmetServerState } from 'react-helmet-async';
-import { WPApiStore, IAppSettingsShell, SiteStructureStore } from '@quantumart/qp8-widget-platform-shell-core';
+import {
+  WPApiStore,
+  IAppSettingsShell,
+  SiteStructureStore,
+} from '@quantumart/qp8-widget-platform-shell-core';
 import { IHelmetString, convertHelmetToString } from 'src/utilities/helmet-helpers';
 import { WidgetPlatformStore } from 'src/share/stores/widget-platform-context/widget-platform-context-store';
 import { IWPComponentStore } from 'src/share/stores/wp-components/wp-component-store';
 import { StaticWPComponentsStore } from 'src/share/stores/wp-components/realizations/static-wpc-store';
 import { HrefContext } from 'src/share/hooks/url-location';
+import { NotFoundComponent } from 'src/client/components/not-found/not-found-component';
 
 interface IProps {
   appSettings: IAppSettingsShell;
@@ -28,7 +33,12 @@ const prepareServerApp = async (url: string, appSettings: IAppSettingsShell): Pr
   //Грузить компоненты на сервере можно только в статике сейчас
   const wpComponentStore: IWPComponentStore = new StaticWPComponentsStore();
 
-  const siteStructureStore = new SiteStructureStore(wpApiStore, appSettings, Page);
+  const siteStructureStore = new SiteStructureStore(
+    wpApiStore,
+    appSettings,
+    Page,
+    NotFoundComponent,
+  );
   await siteStructureStore.init();
 
   let apolloClient: ApolloClient<NormalizedCacheObject> | undefined;

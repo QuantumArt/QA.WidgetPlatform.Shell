@@ -44,6 +44,22 @@ export class StaticWPComponentsStore implements IWPComponentStore {
     };
   };
 
+  public allowedSubpageHandler = async (
+    info: IComponentInfo,
+    tailUrl: string,
+  ): Promise<boolean> => {
+    try {
+      const wpComponent = (await StaticWPComponentsStore.getPath(
+        info.moduleName,
+        info.componentAlias,
+      )()) as IWPComponent;
+      return !!wpComponent.allowedSubpage ? wpComponent.allowedSubpage(tailUrl) : false;
+    } catch (ex) {
+      console.error(ex);
+      return false;
+    }
+  };
+
   public getStaticPropsHandler = async (
     info: IComponentInfo,
     wpProps: { [key: string]: unknown },

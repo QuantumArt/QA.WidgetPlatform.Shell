@@ -9,12 +9,14 @@ import {
   IAppSettingsShell,
   getZones,
   getPage,
+  getTailUrl,
 } from '@quantumart/qp8-widget-platform-shell-core';
 import { IWPComponentStore } from '../wp-components/wp-component-store';
 import { ApolloClient, NormalizedCacheObject } from '@apollo/client';
 
 export class WidgetPlatformStore {
   private componentProps?: undefined | { details: WPComponentProps };
+  private allowedSubpage?: undefined | boolean;
   private zones?: Record<string, WidgetDetails[]>;
   public pageHierarchy: { [nodeId: number]: number[] } = {};
 
@@ -52,6 +54,17 @@ export class WidgetPlatformStore {
     this.componentProps = {
       details: await this.getData(page),
     };
+
+    const tailUrl = getTailUrl(
+      page.id!,
+      this.appSetting.publicPath,
+      this.structure,
+      this.pageHierarchy,
+      url,
+    );
+    //Загружаем данные по доступности подстраниц
+    this.allowedSubpage = await this.getAllowedSubpage(page, tailUrl);
+
     this.zones = await this.getZones(url, page.id!);
   };
 
@@ -74,6 +87,12 @@ export class WidgetPlatformStore {
   public getPreloadData = (): undefined | { details: WPComponentProps } => {
     const result = this.componentProps;
     delete this.componentProps;
+    return result;
+  };
+
+  public getPreloadAllowedSubpage = (): undefined | boolean => {
+    const result = this.allowedSubpage;
+    delete this.allowedSubpage;
     return result;
   };
 
@@ -109,6 +128,20 @@ export class WidgetPlatformStore {
         )) as Record<string, FieldInfo>;
       }
     }
+  };
+
+  public getAllowedSubpage = async (node: SiteNode, tailUrl: string): Promise<boolean> => {
+    const fcdm =
+      this.appSetting.widgetsPlatform.forcedConfigurationOfDynamicModules?.[node.nodeType!];
+    const nodwData = await this.wpApi.node(node.id!);
+    return await this.wpComponentStore.allowedSubpageHandler(
+      {
+        url: fcdm?.url ?? node.frontModuleUrl ?? '', //TODO получать с node
+        moduleName: fcdm?.moduleName ?? node.frontModuleName ?? '', //TODO получать с node, ?? this.appSetting.widgetsPlatform
+        componentAlias: node.nodeType!,
+      },
+      tailUrl,
+    );
   };
 }
 

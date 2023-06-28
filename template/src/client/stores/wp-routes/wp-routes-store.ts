@@ -4,6 +4,7 @@ import {
   IAppSettingsShell,
   getBreadcrumbs,
   getSiteMap,
+  getTailUrl,
 } from '@quantumart/qp8-widget-platform-shell-core';
 import { WidgetPlatformStore } from 'src/share/stores/widget-platform-context/widget-platform-context-store';
 
@@ -14,6 +15,7 @@ export class WPRoutesStore implements IWPRoutesStore {
     private readonly widgetPlatformStore: WidgetPlatformStore,
     private readonly structure: undefined | SiteNode,
     private readonly node: SiteNode,
+    private readonly href: string,
   ) {}
 
   getBreadcrumbs = (): BreadcrumbItem[] => {
@@ -35,5 +37,16 @@ export class WPRoutesStore implements IWPRoutesStore {
       this.structure,
     );
     return siteMap;
+  };
+
+  getTailUrl = (): string => {
+    const tailUrl = getTailUrl(
+      this.node.id!,
+      this.appSetting.publicPath,
+      this.structure,
+      this.widgetPlatformStore.pageHierarchy,
+      this.href
+    );
+    return tailUrl;
   };
 }

@@ -21,6 +21,9 @@ const webpackConfig = {
       src: path.resolve(__dirname, '../src/'),
     },
   },
+  optimization: {
+    minimize: false,
+  },
   module: {
     rules: [
       {

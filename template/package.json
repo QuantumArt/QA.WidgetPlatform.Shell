@@ -1,6 +1,6 @@
 {
   "name": "@quantumart/qp8-widget-platform-shell",
-  "version": "8.0.6",
+  "version": "8.0.7",
   "description": "Данный проект является частью системы QP8.WidgetPlatform и содержит инфраструктурный шаблон (оболочку) для загрузки модулей",
   "author": "Quantum Art (http://quantumart.ru/) Alferov Vitalii",
   "license": "Apache License Version 2.0",
@@ -57,7 +57,7 @@
     "@module-federation/node": "^0.14.0",
     "@module-federation/typescript": "^2.3.0",
     "@quantumart/qp8-widget-platform-bridge": "^8.0.3",
-    "@quantumart/qp8-widget-platform-shell-core": "^8.0.3",
+    "@quantumart/qp8-widget-platform-shell-core": "^8.0.4",
     "autoprefixer": "^10.4.14",
     "buffer": "^6.0.3",
     "compression": "^1.7.4",

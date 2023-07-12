@@ -3,7 +3,20 @@
     "apiUrl": "https://wp-api.demositerus.qsupport.ru",
     "graphql": null,
     "dnsName": "wp-template.qsupport.ru",
-    "forcedConfigurationOfDynamicModules": { }
+    "forcedConfigurationOfDynamicModules": {
+      "start_page": {
+        "url": "http://localhost:3201/static",
+        "moduleName": "qp_widgets_platform_modules"
+      },
+      "text_page": {
+        "url": "http://localhost:3201/static",
+        "moduleName": "qp_widgets_platform_modules"
+      },
+      "html_widget": {
+        "url": "http://localhost:3201/static",
+        "moduleName": "qp_widgets_platform_modules"
+      }
+    }
   },
   "useDynamicModules": false,
   "ssr": {

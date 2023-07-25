@@ -9,21 +9,37 @@ import { useAppSettingsShell } from '@quantumart/qp8-widget-platform-shell-core'
 import { ApolloClient, NormalizedCacheObject } from '@apollo/client';
 
 export class StaticWPComponentsStore implements IWPComponentStore {
+  private lazyComponentCash: Record<
+    string,
+    Record<string, React.LazyExoticComponent<(props: JSX.IntrinsicAttributes) => JSX.Element>>
+  > = {};
+
   public getComponent = (info: IComponentInfo): ((props: WPComponentProps) => JSX.Element) => {
     const appSettings = useAppSettingsShell();
-    const wpComponentPromise = StaticWPComponentsStore.getPath(
-      info.moduleName,
-      info.componentAlias,
-    );
 
     if (!!appSettings.ssr?.active) {
-      const LazyConponent = React.lazy(wpComponentPromise);
+      if (!this.lazyComponentCash[info.moduleName]) {
+        this.lazyComponentCash[info.moduleName] = {};
+      }
+
+      if (!this.lazyComponentCash[info.moduleName][info.componentAlias]) {
+        this.lazyComponentCash[info.moduleName][info.componentAlias] = React.lazy(
+          StaticWPComponentsStore.getPath(info.moduleName, info.componentAlias),
+        );
+      }
+
+      const LazyConponent = this.lazyComponentCash[info.moduleName][info.componentAlias];
       return (props: WPComponentProps) => (
         <React.Suspense fallback={<Loader />}>
           <LazyConponent {...props} />
         </React.Suspense>
       );
     }
+
+    const wpComponentPromise = StaticWPComponentsStore.getPath(
+      info.moduleName,
+      info.componentAlias,
+    );
 
     return (props: WPComponentProps) => {
       const [wpComponent, setWPComponent] = React.useState<IWPComponent>();

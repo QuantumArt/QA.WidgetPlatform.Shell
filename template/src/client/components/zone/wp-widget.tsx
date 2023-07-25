@@ -12,9 +12,15 @@ interface IProps {
 
 const WPWidget = ({ widgetDetails }: IProps): JSX.Element => {
   const appSetting = useAppSettingsShell();
-  const [itemStore] = React.useState(() => new WPItemStore(widgetDetails.childWidgets ?? {}));
-  const [abstractItemStore] = React.useState(() => new AbstractItemStore(widgetDetails));
-  const [zoneStore] = React.useState(() => new ZoneStore(widgetDetails.id!));
+  const itemStore = React.useMemo(
+    () => new WPItemStore(widgetDetails.childWidgets ?? {}),
+    [widgetDetails.childWidgets ?? {}],
+  );
+  const abstractItemStore = React.useMemo(
+    () => new AbstractItemStore(widgetDetails),
+    [widgetDetails],
+  );
+  const zoneStore = React.useMemo(() => new ZoneStore(widgetDetails.id!), [widgetDetails.id!]);
 
   const fcdm =
     appSetting.widgetsPlatform.forcedConfigurationOfDynamicModules?.[widgetDetails.nodeType!];

@@ -47,8 +47,8 @@ const Page = (props: IProps): JSX.Element => {
       new WPRoutesStore(appSettingsShell, wpStore, siteStructure.structure, props.node, href ?? ''),
     [appSettingsShell, wpStore, siteStructure.structure, props.node, href],
   );
-  const [abstractItemStore] = React.useState(() => new AbstractItemStore(props.node));
-  const [zoneStore] = React.useState(() => new ZoneStore(props.node.id!));
+  const abstractItemStore = React.useMemo(() => new AbstractItemStore(props.node), [props.node]);
+  const zoneStore = React.useMemo(() => new ZoneStore(props.node.id!), [props.node.id!]);
 
   const tailUrl = wpRoutesStore.getTailUrl();
 

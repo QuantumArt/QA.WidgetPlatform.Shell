@@ -2,10 +2,12 @@ import React from 'react';
 import ReactDOMClient from 'react-dom/client';
 import {
   AbstractItemContext,
+  EventBusStoreContext,
   WPApolloClientProvider,
   WPRoutesStoreContext,
   ZoneStoreContext,
   useAbstractItem,
+  useEventBusStore,
   useWPApolloClient,
   useWPRoutesStore,
   useZoneStore,
@@ -39,10 +41,11 @@ interface IProps {
 const patternZone = /\[\[zone=([\w\d]+)\]\]/g;
 
 const DynamicZoneServer = (props: IProps): JSX.Element => {
-  const [componentId] = React.useState(() => React.useId());
+  const [componentId] = React.useState(React.useId());
   const href = useHref();
   const appSettingsShell = useAppSettingsShell();
   const widgetPlatformStore = useWidgetPlatformStore();
+  const eventBusStore = useEventBusStore();
   const wpcStore = useWpcStore();
   const siteStructureStore = useSiteStructureStore();
   const zoneStore = useZoneStore();
@@ -73,21 +76,23 @@ const DynamicZoneServer = (props: IProps): JSX.Element => {
             <HrefContext.Provider value={href}>
               <AppSettingsShellContext.Provider value={appSettingsShell}>
                 <WidgetPlatformStoreContext.Provider value={widgetPlatformStore}>
-                  <SiteStructureStoreContext.Provider value={siteStructureStore}>
-                    <WPComponentsStoreContext.Provider value={wpcStore}>
-                      <ZoneStoreContext.Provider value={zoneStore}>
-                        <WPItemStoreContext.Provider value={wpItemStore}>
-                          <WPRoutesStoreContext.Provider value={wpRoutesStore}>
-                            <AbstractItemContext.Provider value={abstractItem}>
-                              <WPApolloClientProvider client={apolloClient}>
-                                <Zone zoneName={zoneName} />
-                              </WPApolloClientProvider>
-                            </AbstractItemContext.Provider>
-                          </WPRoutesStoreContext.Provider>
-                        </WPItemStoreContext.Provider>
-                      </ZoneStoreContext.Provider>
-                    </WPComponentsStoreContext.Provider>
-                  </SiteStructureStoreContext.Provider>
+                  <EventBusStoreContext.Provider value={eventBusStore}>
+                    <SiteStructureStoreContext.Provider value={siteStructureStore}>
+                      <WPComponentsStoreContext.Provider value={wpcStore}>
+                        <ZoneStoreContext.Provider value={zoneStore}>
+                          <WPItemStoreContext.Provider value={wpItemStore}>
+                            <WPRoutesStoreContext.Provider value={wpRoutesStore}>
+                              <AbstractItemContext.Provider value={abstractItem}>
+                                <WPApolloClientProvider client={apolloClient}>
+                                  <Zone zoneName={zoneName} />
+                                </WPApolloClientProvider>
+                              </AbstractItemContext.Provider>
+                            </WPRoutesStoreContext.Provider>
+                          </WPItemStoreContext.Provider>
+                        </ZoneStoreContext.Provider>
+                      </WPComponentsStoreContext.Provider>
+                    </SiteStructureStoreContext.Provider>
+                  </EventBusStoreContext.Provider>
                 </WidgetPlatformStoreContext.Provider>
               </AppSettingsShellContext.Provider>
             </HrefContext.Provider>
@@ -130,9 +135,10 @@ const DynamicZoneServer = (props: IProps): JSX.Element => {
 };
 
 const DynamicZoneClient = (props: IProps): JSX.Element => {
-  const [componentId] = React.useState(() => React.useId());
+  const [componentId] = React.useState(React.useId());
   const appSettingsShell = useAppSettingsShell();
   const widgetPlatformStore = useWidgetPlatformStore();
+  const eventBusStore = useEventBusStore();
   const wpcStore = useWpcStore();
   const siteStructureStore = useSiteStructureStore();
   const zoneStore = useZoneStore();
@@ -148,21 +154,23 @@ const DynamicZoneClient = (props: IProps): JSX.Element => {
         <BrowserRouter basename="/">
           <AppSettingsShellContext.Provider value={appSettingsShell}>
             <WidgetPlatformStoreContext.Provider value={widgetPlatformStore}>
-              <SiteStructureStoreContext.Provider value={siteStructureStore}>
-                <WPComponentsStoreContext.Provider value={wpcStore}>
-                  <ZoneStoreContext.Provider value={zoneStore}>
-                    <WPItemStoreContext.Provider value={wpItemStore}>
-                      <WPRoutesStoreContext.Provider value={wpRoutesStore}>
-                        <AbstractItemContext.Provider value={abstractItem}>
-                          <WPApolloClientProvider client={apolloClient}>
-                            <Zone zoneName={element.getAttribute('zone')!} />
-                          </WPApolloClientProvider>
-                        </AbstractItemContext.Provider>
-                      </WPRoutesStoreContext.Provider>
-                    </WPItemStoreContext.Provider>
-                  </ZoneStoreContext.Provider>
-                </WPComponentsStoreContext.Provider>
-              </SiteStructureStoreContext.Provider>
+              <EventBusStoreContext.Provider value={eventBusStore}>
+                <SiteStructureStoreContext.Provider value={siteStructureStore}>
+                  <WPComponentsStoreContext.Provider value={wpcStore}>
+                    <ZoneStoreContext.Provider value={zoneStore}>
+                      <WPItemStoreContext.Provider value={wpItemStore}>
+                        <WPRoutesStoreContext.Provider value={wpRoutesStore}>
+                          <AbstractItemContext.Provider value={abstractItem}>
+                            <WPApolloClientProvider client={apolloClient}>
+                              <Zone zoneName={element.getAttribute('zone')!} />
+                            </WPApolloClientProvider>
+                          </AbstractItemContext.Provider>
+                        </WPRoutesStoreContext.Provider>
+                      </WPItemStoreContext.Provider>
+                    </ZoneStoreContext.Provider>
+                  </WPComponentsStoreContext.Provider>
+                </SiteStructureStoreContext.Provider>
+              </EventBusStoreContext.Provider>
             </WidgetPlatformStoreContext.Provider>
           </AppSettingsShellContext.Provider>
         </BrowserRouter>,

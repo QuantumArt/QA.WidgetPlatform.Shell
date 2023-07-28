@@ -16,12 +16,17 @@ import {
   IWPComponentStore,
   WPComponentsStoreContext,
 } from 'src/share/stores/wp-components/wp-component-store';
-import { WPApolloClientProvider } from '@quantumart/qp8-widget-platform-bridge';
+import {
+  EventBusStoreContext,
+  IEventBusStore,
+  WPApolloClientProvider,
+} from '@quantumart/qp8-widget-platform-bridge';
 import './assets/style/style.scss';
 
 interface IProps {
   appSettings: IAppSettingsShell;
   widgetsStore: IWPComponentStore;
+  eventBusStore: IEventBusStore;
   wpStore: WidgetPlatformStore;
   siteStructureStore: SiteStructureStore;
   apolloClient?: ApolloClient<NormalizedCacheObject>;
@@ -46,13 +51,15 @@ const App = (props: IProps) => {
     return (
       <AppSettingsShellContext.Provider value={props.appSettings}>
         <WidgetPlatformStoreContext.Provider value={props.wpStore}>
-          <SiteStructureStoreContext.Provider value={props.siteStructureStore}>
-            <WPComponentsStoreContext.Provider value={props.widgetsStore}>
-              <WPApolloClientProvider client={props.apolloClient}>
-                <SiteRoutes routes={props.siteStructureStore.routes} />
-              </WPApolloClientProvider>
-            </WPComponentsStoreContext.Provider>
-          </SiteStructureStoreContext.Provider>
+          <EventBusStoreContext.Provider value={props.eventBusStore}>
+            <SiteStructureStoreContext.Provider value={props.siteStructureStore}>
+              <WPComponentsStoreContext.Provider value={props.widgetsStore}>
+                <WPApolloClientProvider client={props.apolloClient}>
+                  <SiteRoutes routes={props.siteStructureStore.routes} />
+                </WPApolloClientProvider>
+              </WPComponentsStoreContext.Provider>
+            </SiteStructureStoreContext.Provider>
+          </EventBusStoreContext.Provider>
         </WidgetPlatformStoreContext.Provider>
       </AppSettingsShellContext.Provider>
     );

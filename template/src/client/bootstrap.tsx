@@ -2,6 +2,7 @@ import React from 'react';
 import App from './App';
 import Page from './components/page/page';
 import ReactDOMClient from 'react-dom/client';
+import EventBus from 'js-event-bus';
 import { ApolloClient, InMemoryCache, NormalizedCacheObject } from '@apollo/client';
 import { HelmetProvider } from 'react-helmet-async';
 import { BrowserRouter } from 'react-router-dom';
@@ -16,10 +17,12 @@ import { DynamicWPComponentsStore } from 'src/share/stores/wp-components/realiza
 import { StaticWPComponentsStore } from 'src/share/stores/wp-components/realizations/static-wpc-store';
 import { IWPComponentStore } from 'src/share/stores/wp-components/wp-component-store';
 import { NotFoundComponent } from './components/not-found/not-found-component';
+import { IEventBusStore } from '@quantumart/qp8-widget-platform-bridge';
 
 interface IProps {
   appSettings: IAppSettingsShell;
   wpApiStore: WPApiStore;
+  eventBusStore: IEventBusStore;
   wpStore: WidgetPlatformStore;
   siteStructureStore: SiteStructureStore;
   wpComponentStore: IWPComponentStore;
@@ -29,6 +32,8 @@ interface IProps {
 const prepareClientApp = async (): Promise<IProps> => {
   const appSettings = await loadSettingsFromFile();
   const wpApiStore = new WPApiStore(appSettings);
+
+  const eventBusStore = new EventBus();
 
   const wpComponentStore = appSettings.useDynamicModules
     ? new DynamicWPComponentsStore()
@@ -65,7 +70,15 @@ const prepareClientApp = async (): Promise<IProps> => {
   );
   await wpStore.preloadProps(location.pathname);
 
-  return { appSettings, wpApiStore, wpStore, siteStructureStore, wpComponentStore, apolloClient };
+  return {
+    appSettings,
+    wpApiStore,
+    eventBusStore,
+    wpStore,
+    siteStructureStore,
+    wpComponentStore,
+    apolloClient,
+  };
 };
 
 prepareClientApp().then(props => {
@@ -77,6 +90,7 @@ prepareClientApp().then(props => {
           appSettings={props.appSettings}
           siteStructureStore={props.siteStructureStore}
           wpStore={props.wpStore}
+          eventBusStore={props.eventBusStore}
           widgetsStore={props.wpComponentStore}
           apolloClient={props.apolloClient}
         />

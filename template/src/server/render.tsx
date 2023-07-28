@@ -2,6 +2,7 @@ import React from 'react';
 import stream from 'stream';
 import App from 'src/client/App';
 import Page from 'src/client/components/page/page';
+import EventBus from 'js-event-bus';
 import { ApolloClient, InMemoryCache, NormalizedCacheObject } from '@apollo/client';
 import { renderToPipeableStream } from 'react-dom/server';
 import { StaticRouter } from 'react-router-dom/server';
@@ -17,10 +18,12 @@ import { IWPComponentStore } from 'src/share/stores/wp-components/wp-component-s
 import { StaticWPComponentsStore } from 'src/share/stores/wp-components/realizations/static-wpc-store';
 import { HrefContext } from 'src/share/hooks/url-location';
 import { NotFoundComponent } from 'src/client/components/not-found/not-found-component';
+import { IEventBusStore } from '@quantumart/qp8-widget-platform-bridge';
 
 interface IProps {
   appSettings: IAppSettingsShell;
   wpApiStore: WPApiStore;
+  eventBusStore: IEventBusStore;
   wpStore: WidgetPlatformStore;
   siteStructureStore: SiteStructureStore;
   wpComponentStore: IWPComponentStore;
@@ -29,6 +32,8 @@ interface IProps {
 
 const prepareServerApp = async (url: string, appSettings: IAppSettingsShell): Promise<IProps> => {
   const wpApiStore = new WPApiStore(appSettings);
+
+  const eventBusStore = new EventBus();
 
   //Грузить компоненты на сервере можно только в статике сейчас
   const wpComponentStore: IWPComponentStore = new StaticWPComponentsStore();
@@ -65,7 +70,15 @@ const prepareServerApp = async (url: string, appSettings: IAppSettingsShell): Pr
   );
   await wpStore.preloadProps(url);
 
-  return { appSettings, wpApiStore, wpStore, siteStructureStore, wpComponentStore, apolloClient };
+  return {
+    appSettings,
+    wpApiStore,
+    eventBusStore,
+    wpStore,
+    siteStructureStore,
+    wpComponentStore,
+    apolloClient,
+  };
 };
 
 export interface ISiteModel {
@@ -75,7 +88,7 @@ export interface ISiteModel {
 
 async function bodyBuilder(url: string, appSettings: IAppSettingsShell): Promise<ISiteModel> {
   try {
-    var props = await prepareServerApp(url, appSettings);
+    const props = await prepareServerApp(url, appSettings);
     const helmetContext: { helmet?: HelmetServerState } = {};
     const render = new Promise<string>((resolve, reject) => {
       const buffer: Buffer[] = [];
@@ -97,6 +110,7 @@ async function bodyBuilder(url: string, appSettings: IAppSettingsShell): Promise
               <App
                 appSettings={appSettings}
                 siteStructureStore={props.siteStructureStore}
+                eventBusStore={props.eventBusStore}
                 wpStore={props.wpStore}
                 widgetsStore={props.wpComponentStore}
                 apolloClient={props.apolloClient}

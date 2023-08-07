@@ -126,6 +126,10 @@ export class WidgetPlatformStore {
           widget.details ?? {},
           this.apolloClient,
         )) as Record<string, FieldInfo>;
+
+        if (!!widget.childWidgets) {
+          this.convertDetais(widget.childWidgets);
+        }
       }
     }
   };

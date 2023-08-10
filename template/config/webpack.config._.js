@@ -4,7 +4,7 @@ const TsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
 /**
  * @type {import('webpack').Configuration}
  **/
-const webpackConfig = {
+const webpackConfig = env => ({
   resolve: {
     extensions: ['.ts', '.tsx', '.js'],
     alias: {
@@ -18,8 +18,13 @@ const webpackConfig = {
         loader: 'babel-loader',
         exclude: /node_modules/,
         options: {
-          presets: ['@babel/preset-react', '@babel/preset-typescript'],
+          presets: [['@babel/preset-react', { runtime: 'automatic' }], '@babel/preset-typescript'],
         },
+      },
+      {
+        test: /\.js$/,
+        enforce: 'pre',
+        use: ['source-map-loader'],
       },
       {
         test: /\.(scss|css)?$/,
@@ -68,6 +73,6 @@ const webpackConfig = {
     ],
   },
   plugins: [new TsCheckerWebpackPlugin()],
-};
+});
 
 module.exports = webpackConfig;

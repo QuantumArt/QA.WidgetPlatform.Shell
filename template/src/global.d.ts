@@ -5,6 +5,7 @@
 declare namespace NodeJS {
   interface ProcessEnv {
     readonly wpPlatform: {
+      readonly standalone: boolean;
       readonly publicPath: string;
     };
   }

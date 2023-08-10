@@ -7,7 +7,7 @@ const { merge } = require('webpack-merge');
 /**
  * @type {import('webpack').Configuration}
  **/
-const webpackConfig = {
+const webpackConfig = env => ({
   plugins: [
     new HtmlWebpackPlugin({
       template: path.resolve(__dirname, '../src/client/public/index.html'),
@@ -27,6 +27,6 @@ const webpackConfig = {
       ],
     }),
   ],
-};
+});
 
-module.exports = merge(baseconfig, webpackConfig);
+module.exports = env => merge(baseconfig(env), webpackConfig(env));

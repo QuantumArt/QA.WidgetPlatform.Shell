@@ -1,11 +1,11 @@
-const shared = require('./webpack.config.client.standalone._');
+const baseconfig = require('./webpack.config.client.standalone._');
 const { EnvironmentPlugin } = require('webpack');
 const { merge } = require('webpack-merge');
 
 /**
  * @type {import('webpack').Configuration}
  **/
-const webpackConfig = {
+const webpackConfig = env => ({
   plugins: [
     new EnvironmentPlugin({
       wpPlatform: {
@@ -13,6 +13,6 @@ const webpackConfig = {
       },
     }),
   ],
-};
+});
 
-module.exports = merge(shared, webpackConfig);
+module.exports = env => merge(baseconfig(env), webpackConfig(env));

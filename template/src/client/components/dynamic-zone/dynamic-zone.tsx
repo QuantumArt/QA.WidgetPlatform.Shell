@@ -27,12 +27,12 @@ import {
   useWpcStore,
 } from 'src/share/stores/wp-components/wp-component-store';
 import { WPItemStoreContext, useWPItemStore } from 'src/client/stores/wp-item/wp-item-store';
-import { renderToPipeableStream } from 'react-dom/server';
 import { BrowserRouter } from 'react-router-dom';
 import { StaticRouter } from 'react-router-dom/server';
 import stream from 'stream';
 import Zone from '../zone/zone';
 import { HrefContext, useHref } from 'src/share/hooks/url-location';
+const reactDomServer = typeof window === 'undefined' ? require('react-dom/server') : {};
 
 interface IProps {
   html: string;
@@ -71,7 +71,7 @@ const DynamicZoneServer = (props: IProps): JSX.Element => {
           resolve(Buffer.concat(buffer).toString('utf8'));
         });
 
-        const pipeableStream = renderToPipeableStream(
+        const pipeableStream = reactDomServer.renderToPipeableStream(
           <StaticRouter location={href ?? ''}>
             <HrefContext.Provider value={href}>
               <AppSettingsShellContext.Provider value={appSettingsShell}>
@@ -102,7 +102,7 @@ const DynamicZoneServer = (props: IProps): JSX.Element => {
             onAllReady() {
               pipeableStream.pipe(echoStream);
             },
-            onError(x) {
+            onError(x: any) {
               reject(x);
             },
           },

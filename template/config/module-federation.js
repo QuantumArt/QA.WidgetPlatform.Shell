@@ -4,8 +4,12 @@ const {
 const { NodeFederationPlugin, StreamingTargetPlugin } = require('@module-federation/node');
 const pkg = require('../package.json');
 
-const remotes = {
-  qp_widgets_platform_modules: 'qp_widgets_platform_modules@http://localhost:3201/static',
+const remotesLocal = {
+  qp_widgets_platform_modules: 'qp_widgets_platform_modules@http://localhost:3201/',
+};
+
+const remotesProd = {
+  qp_widgets_platform_modules: 'qp_widgets_platform_modules@||***qp_widgets_platform_modules***||/',
 };
 
 const getRemotes = (remotes, postfix) =>
@@ -35,25 +39,34 @@ const shared = {
   },
 };
 
-module.exports = {
+module.exports = env => ({
   client: new ModuleFederationPlugin({
     name: 'qp_widgets_platform_shell',
     filename: 'remoteEntry.js',
-    remotes: getRemotes(remotes, '/client/remoteEntry.js'),
+    remotes: getRemotes(
+      env.prodstate ? remotesProd : remotesLocal,
+      env.nodeserver ? 'static/client/remoteEntry.js' : 'remoteEntry.js',
+    ),
     shared: shared,
   }),
   server: [
     new NodeFederationPlugin({
       name: 'qp_widgets_platform_shell',
       library: { type: 'commonjs-module' },
-      remotes: getRemotes(remotes, '/server/remoteEntry.js'),
+      remotes: getRemotes(
+        env.prodstate ? remotesProd : remotesLocal,
+        env.nodeserver ? 'static/server/remoteEntry.js' : 'remoteEntry.js',
+      ),
       shared: shared,
       filename: 'remoteEntry.js',
     }),
     new StreamingTargetPlugin({
       name: 'qp_widgets_platform_shell',
       library: { type: 'commonjs-module' },
-      remotes: getRemotes(remotes, '/server/remoteEntry.js'),
+      remotes: getRemotes(
+        env.prodstate ? remotesProd : remotesLocal,
+        env.nodeserver ? 'static/server/remoteEntry.js' : 'remoteEntry.js',
+      ),
     }),
   ],
-};
+});

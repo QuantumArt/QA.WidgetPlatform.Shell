@@ -2,13 +2,12 @@ const path = require('path');
 const baseconfig = require('./webpack.config.client._');
 const LoadablePlugin = require('@loadable/webpack-plugin');
 const CopyPlugin = require('copy-webpack-plugin');
-const { EnvironmentPlugin } = require('webpack');
 const { merge } = require('webpack-merge');
 
 /**
  * @type {import('webpack').Configuration}
  **/
-const webpackConfig = {
+const webpackConfig = env => ({
   output: {
     path: path.resolve(__dirname, '../dist/static/client'),
   },
@@ -27,6 +26,6 @@ const webpackConfig = {
       ],
     }),
   ],
-};
+});
 
-module.exports = merge(baseconfig, webpackConfig);
+module.exports = env => merge(baseconfig(env), webpackConfig(env));

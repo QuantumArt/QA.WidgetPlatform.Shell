@@ -6,8 +6,8 @@ const { merge } = require('webpack-merge');
 /**
  * @type {import('webpack').Configuration}
  **/
-const webpackConfig = {
-  devtool: 'source-map',
+const webpackConfig = env => ({
+  devtool: 'eval',
   mode: 'development',
   devServer: {
     static: {
@@ -20,14 +20,16 @@ const webpackConfig = {
     },
     port: 3200,
     historyApiFallback: true,
+    hot: false,
   },
   plugins: [
     new EnvironmentPlugin({
       wpPlatform: {
+        standalone: !env.nodeserver,
         publicPath: '/',
       },
     }),
   ],
-};
+});
 
-module.exports = merge(baseconfig, webpackConfig);
+module.exports = env => merge(baseconfig(env), webpackConfig(env));

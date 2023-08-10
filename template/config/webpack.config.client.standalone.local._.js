@@ -5,8 +5,8 @@ const { merge } = require('webpack-merge');
 /**
  * @type {import('webpack').Configuration}
  **/
-const webpackConfig = {
-  devtool: 'source-map',
+const webpackConfig = env => ({
+  devtool: 'eval',
   plugins: [
     new EnvironmentPlugin({
       wpPlatform: {
@@ -14,6 +14,6 @@ const webpackConfig = {
       },
     }),
   ],
-};
+});
 
-module.exports = merge(baseconfig, webpackConfig);
+module.exports = env => merge(baseconfig(env), webpackConfig(env));

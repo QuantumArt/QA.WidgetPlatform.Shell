@@ -2,13 +2,12 @@ const path = require('path');
 const moduleFederationPlugin = require('./module-federation');
 const baseconfig = require('./webpack.config._');
 const CopyPlugin = require('copy-webpack-plugin');
-const nodeExternals = require('webpack-node-externals');
 const { merge } = require('webpack-merge');
 
 /**
  * @type {import('webpack').Configuration}
  **/
-const webpackConfig = {
+const webpackConfig = env => ({
   entry: path.resolve(__dirname, '../src/server/index'),
   mode: 'production',
   target: 'node',
@@ -19,7 +18,7 @@ const webpackConfig = {
   },
   externalsType: 'node-commonjs',
   plugins: [
-    ...moduleFederationPlugin.server,
+    ...moduleFederationPlugin(env).server,
     new CopyPlugin({
       patterns: [
         { context: 'src/server', from: 'views', to: 'views' },
@@ -31,6 +30,6 @@ const webpackConfig = {
       ],
     }),
   ],
-};
+});
 
-module.exports = merge(baseconfig, webpackConfig);
+module.exports = env => merge(baseconfig(env), webpackConfig(env));

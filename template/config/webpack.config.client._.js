@@ -6,7 +6,7 @@ const { merge } = require('webpack-merge');
 /**
  * @type {import('webpack').Configuration}
  **/
-const webpackConfig = {
+const webpackConfig = env => ({
   entry: path.resolve(__dirname, '../src/client/index'),
   mode: 'production',
   output: {
@@ -16,10 +16,10 @@ const webpackConfig = {
   },
   resolve: {
     fallback: {
-      "stream": require.resolve("stream-browserify")
-    }
+      stream: require.resolve('stream-browserify'),
+    },
   },
-  plugins: [moduleFederationPlugin.client],
-};
+  plugins: [moduleFederationPlugin(env).client],
+});
 
-module.exports = merge(baseconfig, webpackConfig);
+module.exports = env => merge(baseconfig(env), webpackConfig(env));

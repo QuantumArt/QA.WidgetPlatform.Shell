@@ -3,12 +3,12 @@ import ReactDOMClient from 'react-dom/client';
 import {
   AbstractItemContext,
   EventBusStoreContext,
-  WPApolloClientProvider,
+  WPGraphQLClientContext,
   WPRoutesStoreContext,
   ZoneStoreContext,
   useAbstractItem,
   useEventBusStore,
-  useWPApolloClient,
+  useWPGraphQLClient,
   useWPRoutesStore,
   useZoneStore,
 } from '@quantumart/qp8-widget-platform-bridge';
@@ -52,7 +52,7 @@ const DynamicZoneServer = (props: IProps): JSX.Element => {
   const wpItemStore = useWPItemStore();
   const wpRoutesStore = useWPRoutesStore();
   const abstractItem = useAbstractItem();
-  const apolloClient = useWPApolloClient();
+  const graphQLClient = useWPGraphQLClient();
 
   const getComponent = async (): Promise<{
     default: () => JSX.Element;
@@ -83,9 +83,9 @@ const DynamicZoneServer = (props: IProps): JSX.Element => {
                           <WPItemStoreContext.Provider value={wpItemStore}>
                             <WPRoutesStoreContext.Provider value={wpRoutesStore}>
                               <AbstractItemContext.Provider value={abstractItem}>
-                                <WPApolloClientProvider client={apolloClient}>
+                                <WPGraphQLClientContext.Provider value={graphQLClient}>
                                   <Zone zoneName={zoneName} />
-                                </WPApolloClientProvider>
+                                </WPGraphQLClientContext.Provider>
                               </AbstractItemContext.Provider>
                             </WPRoutesStoreContext.Provider>
                           </WPItemStoreContext.Provider>
@@ -145,7 +145,7 @@ const DynamicZoneClient = (props: IProps): JSX.Element => {
   const wpItemStore = useWPItemStore();
   const wpRoutesStore = useWPRoutesStore();
   const abstractItem = useAbstractItem();
-  const apolloClient = useWPApolloClient();
+  const graphQLClient = useWPGraphQLClient();
 
   const resultHTML = props.html.replace(patternZone, `<div name="${componentId}" zone="$1"></div>`);
   React.useEffect(() => {
@@ -161,9 +161,9 @@ const DynamicZoneClient = (props: IProps): JSX.Element => {
                       <WPItemStoreContext.Provider value={wpItemStore}>
                         <WPRoutesStoreContext.Provider value={wpRoutesStore}>
                           <AbstractItemContext.Provider value={abstractItem}>
-                            <WPApolloClientProvider client={apolloClient}>
+                            <WPGraphQLClientContext.Provider value={graphQLClient}>
                               <Zone zoneName={element.getAttribute('zone')!} />
-                            </WPApolloClientProvider>
+                            </WPGraphQLClientContext.Provider>
                           </AbstractItemContext.Provider>
                         </WPRoutesStoreContext.Provider>
                       </WPItemStoreContext.Provider>

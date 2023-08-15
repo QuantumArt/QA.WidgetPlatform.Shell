@@ -6,7 +6,7 @@ import { staticModules } from 'src/app-settings-shell/static-wpc-modules';
 import { Loader } from 'src/client/components/loader/loader';
 import { NotFoundComponent } from 'src/client/components/not-found/not-found-component';
 import { useAppSettingsShell } from '@quantumart/qp8-widget-platform-shell-core';
-import { ApolloClient, NormalizedCacheObject } from '@apollo/client';
+import { IGraphQLClient } from '@quantumart/qp8-widget-platform-bridge';
 
 export class StaticWPComponentsStore implements IWPComponentStore {
   private lazyComponentCash: Record<
@@ -79,7 +79,8 @@ export class StaticWPComponentsStore implements IWPComponentStore {
   public getStaticPropsHandler = async (
     info: IComponentInfo,
     wpProps: { [key: string]: unknown },
-    apolloClient?: ApolloClient<NormalizedCacheObject>,
+    href: string,
+    graphQLClient: IGraphQLClient,
   ): Promise<{ [key: string]: unknown }> => {
     try {
       const wpComponent = (await StaticWPComponentsStore.getPath(
@@ -87,7 +88,10 @@ export class StaticWPComponentsStore implements IWPComponentStore {
         info.componentAlias,
       )()) as IWPComponent;
       return !!wpComponent.getStaticProps
-        ? await wpComponent.getStaticProps(wpProps, apolloClient)
+        ? await wpComponent.getStaticProps(wpProps, {
+            href,
+            graphQLClient,
+          })
         : wpProps;
     } catch (ex) {
       console.error(ex);

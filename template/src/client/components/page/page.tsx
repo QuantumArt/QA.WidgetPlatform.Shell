@@ -39,7 +39,7 @@ const Page = (props: IProps): JSX.Element => {
   const [allowedSubpage, setAllowedSubpage] = React.useState(wpStore.getPreloadAllowedSubpage);
 
   const [itemStore, setItemStore] = React.useState(() => {
-    var zones = wpStore.getPreloadZones();
+    const zones = wpStore.getPreloadZones();
     return zones == undefined ? undefined : new WPItemStore(zones ?? {});
   });
   const wpRoutesStore = React.useMemo(
@@ -48,7 +48,7 @@ const Page = (props: IProps): JSX.Element => {
     [appSettingsShell, wpStore, siteStructure.structure, props.node, href],
   );
   const abstractItemStore = React.useMemo(() => new AbstractItemStore(props.node), [props.node]);
-  const zoneStore = React.useMemo(() => new ZoneStore(props.node.id!), [props.node.id!]);
+  const zoneStore = React.useMemo(() => new ZoneStore(props.node.id!, undefined), [props.node.id!]);
 
   const tailUrl = wpRoutesStore.getTailUrl();
 
@@ -58,7 +58,7 @@ const Page = (props: IProps): JSX.Element => {
   const lazyload = async (): Promise<void> => {
     const allowedSubpage = await wpStore.getAllowedSubpage(props.node, tailUrl);
     setAllowedSubpage(allowedSubpage);
-    setWPProps((await wpStore.getData(props.node)) as WPComponentProps);
+    setWPProps((await wpStore.getData(href ?? '', props.node)) as WPComponentProps);
     setItemStore(new WPItemStore((await wpStore.getZones(href ?? '', props.node.id!)) ?? {}));
   };
   React.useEffect(() => {

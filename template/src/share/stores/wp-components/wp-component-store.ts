@@ -1,7 +1,7 @@
 import React from 'react';
 import { IComponentInfo } from './models/component-info';
 import { WPComponentProps } from './models/wp-component';
-import { ApolloClient, NormalizedCacheObject } from '@apollo/client';
+import { IGraphQLClient } from '@quantumart/qp8-widget-platform-bridge';
 
 export interface IWPComponentStore {
   getComponent(info: IComponentInfo): (props: WPComponentProps) => JSX.Element;
@@ -9,7 +9,8 @@ export interface IWPComponentStore {
   getStaticPropsHandler(
     info: IComponentInfo,
     wpProps: { [key: string]: unknown },
-    apolloClient?: ApolloClient<NormalizedCacheObject>,
+    href: string,
+    graphQLClient: IGraphQLClient,
   ): Promise<{ [key: string]: unknown }>;
 }
 

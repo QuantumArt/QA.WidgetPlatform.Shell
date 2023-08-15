@@ -1,4 +1,4 @@
-import { ApolloClient, NormalizedCacheObject } from '@apollo/client';
+import { IGraphQLClient } from '@quantumart/qp8-widget-platform-bridge';
 
 export type WPComponentProps = JSX.IntrinsicAttributes;
 
@@ -7,6 +7,9 @@ export interface IWPComponent {
   allowedSubpage?: (tailUrl: string) => boolean;
   getStaticProps?: (
     props: { [key: string]: unknown },
-    apolloClient?: ApolloClient<NormalizedCacheObject>,
+    environment: {
+      href: string;
+      graphQLClient: IGraphQLClient;
+    },
   ) => { [key: string]: unknown };
 }

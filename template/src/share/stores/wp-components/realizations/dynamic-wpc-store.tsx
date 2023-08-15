@@ -6,7 +6,7 @@ import { IWPComponent, WPComponentProps } from '../models/wp-component';
 import { Loader } from 'src/client/components/loader/loader';
 import { NotFoundComponent } from 'src/client/components/not-found/not-found-component';
 import { useAppSettingsShell } from '@quantumart/qp8-widget-platform-shell-core';
-import { ApolloClient, NormalizedCacheObject } from '@apollo/client';
+import { IGraphQLClient } from '@quantumart/qp8-widget-platform-bridge';
 
 export class DynamicWPComponentsStore implements IWPComponentStore {
   //Источники модулей
@@ -14,7 +14,7 @@ export class DynamicWPComponentsStore implements IWPComponentStore {
 
   public getComponent = (info: IComponentInfo): ((props: WPComponentProps) => JSX.Element) => {
     const appSettings = useAppSettingsShell();
-    var wpComponentPromise = this.getComponentForEnvironment(info);
+    const wpComponentPromise = this.getComponentForEnvironment(info);
 
     if (!!appSettings.ssr?.active) {
       const LazyConponent = React.lazy(wpComponentPromise);
@@ -49,7 +49,7 @@ export class DynamicWPComponentsStore implements IWPComponentStore {
     tailUrl: string,
   ): Promise<boolean> => {
     try {
-      var wpComponent = await this.getComponentForEnvironment(info)();
+      const wpComponent = await this.getComponentForEnvironment(info)();
       return !!wpComponent.allowedSubpage ? wpComponent.allowedSubpage(tailUrl) : false;
     } catch (ex) {
       console.error(ex);
@@ -60,12 +60,16 @@ export class DynamicWPComponentsStore implements IWPComponentStore {
   public getStaticPropsHandler = async (
     info: IComponentInfo,
     wpProps: { [key: string]: unknown },
-    apolloClient?: ApolloClient<NormalizedCacheObject>,
+    href: string,
+    graphQLClient: IGraphQLClient,
   ): Promise<{ [key: string]: unknown }> => {
     try {
-      var wpComponent = await this.getComponentForEnvironment(info)();
+      const wpComponent = await this.getComponentForEnvironment(info)();
       return !!wpComponent.getStaticProps
-        ? await wpComponent.getStaticProps(wpProps, apolloClient)
+        ? await wpComponent.getStaticProps(wpProps, {
+            href,
+            graphQLClient,
+          })
         : wpProps;
     } catch (ex) {
       console.error(ex);
@@ -78,7 +82,9 @@ export class DynamicWPComponentsStore implements IWPComponentStore {
       ? () => this.getComponentInNode(info)
       : () => this.getComponentInBrowser(info);
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   private getComponentInNode = async (info: IComponentInfo): Promise<IWPComponent> => {
+    //TODO ---
     return {
       default: NotFoundComponent,
     };

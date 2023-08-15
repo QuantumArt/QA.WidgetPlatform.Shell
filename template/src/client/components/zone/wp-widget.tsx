@@ -20,7 +20,10 @@ const WPWidget = ({ widgetDetails }: IProps): JSX.Element => {
     () => new AbstractItemStore(widgetDetails),
     [widgetDetails],
   );
-  const zoneStore = React.useMemo(() => new ZoneStore(widgetDetails.id!), [widgetDetails.id!]);
+  const zoneStore = React.useMemo(
+    () => new ZoneStore(widgetDetails.id!, widgetDetails.zone ?? undefined),
+    [widgetDetails.id!],
+  );
 
   const fcdm =
     appSetting.widgetsPlatform.forcedConfigurationOfDynamicModules?.[widgetDetails.nodeType!];

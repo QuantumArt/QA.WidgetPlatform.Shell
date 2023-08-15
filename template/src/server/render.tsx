@@ -3,7 +3,6 @@ import stream from 'stream';
 import App from 'src/client/App';
 import Page from 'src/client/components/page/page';
 import EventBus from 'js-event-bus';
-import { ApolloClient, InMemoryCache, NormalizedCacheObject } from '@apollo/client';
 import { renderToPipeableStream } from 'react-dom/server';
 import { StaticRouter } from 'react-router-dom/server';
 import { HelmetData, HelmetProvider, HelmetServerState } from 'react-helmet-async';
@@ -18,7 +17,8 @@ import { IWPComponentStore } from 'src/share/stores/wp-components/wp-component-s
 import { StaticWPComponentsStore } from 'src/share/stores/wp-components/realizations/static-wpc-store';
 import { HrefContext } from 'src/share/hooks/url-location';
 import { NotFoundComponent } from 'src/client/components/not-found/not-found-component';
-import { IEventBusStore } from '@quantumart/qp8-widget-platform-bridge';
+import { IEventBusStore, IGraphQLClient } from '@quantumart/qp8-widget-platform-bridge';
+import { GraphQLClient } from 'src/share/stores/graphql-client/graphql-client';
 
 interface IProps {
   appSettings: IAppSettingsShell;
@@ -27,7 +27,7 @@ interface IProps {
   wpStore: WidgetPlatformStore;
   siteStructureStore: SiteStructureStore;
   wpComponentStore: IWPComponentStore;
-  apolloClient?: ApolloClient<NormalizedCacheObject>;
+  graphQLClient: IGraphQLClient;
 }
 
 const prepareServerApp = async (url: string, appSettings: IAppSettingsShell): Promise<IProps> => {
@@ -46,27 +46,14 @@ const prepareServerApp = async (url: string, appSettings: IAppSettingsShell): Pr
   );
   await siteStructureStore.init();
 
-  let apolloClient: ApolloClient<NormalizedCacheObject> | undefined;
-
-  if (!!appSettings.widgetsPlatform?.graphql) {
-    const headers: Record<string, string> = {};
-    if (!!appSettings.widgetsPlatform.graphql.apiKey) {
-      headers.apiKey = appSettings.widgetsPlatform.graphql.apiKey;
-    }
-
-    apolloClient = new ApolloClient<NormalizedCacheObject>({
-      uri: appSettings.widgetsPlatform.graphql.apiUrl,
-      headers: headers,
-      cache: new InMemoryCache(),
-    });
-  }
+  const graphQLClient = new GraphQLClient(appSettings.widgetsPlatform?.graphql);
 
   const wpStore = new WidgetPlatformStore(
     wpApiStore,
     siteStructureStore.structure,
     wpComponentStore,
     appSettings,
-    apolloClient,
+    graphQLClient,
   );
   await wpStore.preloadProps(url);
 
@@ -77,7 +64,7 @@ const prepareServerApp = async (url: string, appSettings: IAppSettingsShell): Pr
     wpStore,
     siteStructureStore,
     wpComponentStore,
-    apolloClient,
+    graphQLClient,
   };
 };
 
@@ -113,7 +100,7 @@ async function bodyBuilder(url: string, appSettings: IAppSettingsShell): Promise
                 eventBusStore={props.eventBusStore}
                 wpStore={props.wpStore}
                 widgetsStore={props.wpComponentStore}
-                apolloClient={props.apolloClient}
+                graphQLClient={props.graphQLClient}
               />
             </StaticRouter>
           </HrefContext.Provider>

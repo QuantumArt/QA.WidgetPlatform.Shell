@@ -12,7 +12,7 @@ import {
   getTailUrl,
 } from '@quantumart/qp8-widget-platform-shell-core';
 import { IWPComponentStore } from '../wp-components/wp-component-store';
-import { ApolloClient, NormalizedCacheObject } from '@apollo/client';
+import { IGraphQLClient } from '@quantumart/qp8-widget-platform-bridge';
 
 export class WidgetPlatformStore {
   private componentProps?: undefined | { details: WPComponentProps };
@@ -25,7 +25,7 @@ export class WidgetPlatformStore {
     private readonly structure: undefined | SiteNode,
     private readonly wpComponentStore: IWPComponentStore,
     private readonly appSetting: IAppSettingsShell,
-    private readonly apolloClient?: ApolloClient<NormalizedCacheObject>,
+    private readonly graphQLClient: IGraphQLClient,
   ) {
     if (!structure || Object.keys(structure).length === 0) {
       return;
@@ -41,8 +41,8 @@ export class WidgetPlatformStore {
     hierarchyIterator(structure, [structure.id!]);
   }
 
-  public preloadProps = async (url: string): Promise<void> => {
-    const page = getPage(url, this.structure);
+  public preloadProps = async (href: string): Promise<void> => {
+    const page = getPage(href, this.structure);
 
     if (!page) {
       // Мы не нашли в структуре нужную страницу
@@ -52,7 +52,7 @@ export class WidgetPlatformStore {
 
     //Загружаем данные из WP по странице
     this.componentProps = {
-      details: await this.getData(page),
+      details: await this.getData(href, page),
     };
 
     const tailUrl = getTailUrl(
@@ -60,12 +60,12 @@ export class WidgetPlatformStore {
       this.appSetting.publicPath,
       this.structure,
       this.pageHierarchy,
-      url,
+      href,
     );
     //Загружаем данные по доступности подстраниц
     this.allowedSubpage = await this.getAllowedSubpage(page, tailUrl);
 
-    this.zones = await this.getZones(url, page.id!);
+    this.zones = await this.getZones(href, page.id!);
   };
 
   public getPreloadZones = (): undefined | Record<string, WidgetDetails[]> => {
@@ -75,12 +75,12 @@ export class WidgetPlatformStore {
   };
 
   public getZones = async (
-    url: string,
+    href: string,
     pageId: number,
   ): Promise<Record<string, WidgetDetails[]>> => {
-    const zones = await getZones(url, pageId, this.wpApi, this.structure, this.pageHierarchy);
+    const zones = await getZones(href, pageId, this.wpApi, this.structure, this.pageHierarchy);
     //Подготавливаем данные для контролов
-    await this.convertDetais(zones);
+    await this.convertDetais(href, zones);
     return zones;
   };
 
@@ -96,7 +96,7 @@ export class WidgetPlatformStore {
     return result;
   };
 
-  public getData = async (node: SiteNode): Promise<WPComponentProps> => {
+  public getData = async (href: string, node: SiteNode): Promise<WPComponentProps> => {
     const fcdm =
       this.appSetting.widgetsPlatform.forcedConfigurationOfDynamicModules?.[node.nodeType!];
     const nodwData = await this.wpApi.node(node.id!);
@@ -107,11 +107,15 @@ export class WidgetPlatformStore {
         componentAlias: node.nodeType!,
       },
       nodwData.details ?? {},
-      this.apolloClient,
+      href,
+      this.graphQLClient,
     )) as Record<string, FieldInfo>;
   };
 
-  private convertDetais = async (zones: Record<string, WidgetDetails[]>): Promise<void> => {
+  private convertDetais = async (
+    href: string,
+    zones: Record<string, WidgetDetails[]>,
+  ): Promise<void> => {
     for (const zoneName in zones) {
       for (const widget of zones[zoneName]) {
         const fcdm =
@@ -124,11 +128,12 @@ export class WidgetPlatformStore {
             componentAlias: widget.nodeType!,
           },
           widget.details ?? {},
-          this.apolloClient,
+          href,
+          this.graphQLClient,
         )) as Record<string, FieldInfo>;
 
         if (!!widget.childWidgets) {
-          this.convertDetais(widget.childWidgets);
+          this.convertDetais(href, widget.childWidgets);
         }
       }
     }
@@ -137,7 +142,6 @@ export class WidgetPlatformStore {
   public getAllowedSubpage = async (node: SiteNode, tailUrl: string): Promise<boolean> => {
     const fcdm =
       this.appSetting.widgetsPlatform.forcedConfigurationOfDynamicModules?.[node.nodeType!];
-    const nodwData = await this.wpApi.node(node.id!);
     return await this.wpComponentStore.allowedSubpageHandler(
       {
         url: fcdm?.url ?? node.frontModuleUrl ?? '', //TODO получать с node

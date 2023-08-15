@@ -1,5 +1,4 @@
 import React from 'react';
-import { ApolloClient, NormalizedCacheObject } from '@apollo/client';
 import { RouteObject, useRoutes } from 'react-router-dom';
 import {
   SiteStructureStore,
@@ -19,9 +18,11 @@ import {
 import {
   EventBusStoreContext,
   IEventBusStore,
-  WPApolloClientProvider,
+  IGraphQLClient,
+  WPGraphQLClientContext,
 } from '@quantumart/qp8-widget-platform-bridge';
 import './assets/style/style.scss';
+import { SplashScreen } from './components/splash-screen/splash-screen';
 
 interface IProps {
   appSettings: IAppSettingsShell;
@@ -29,7 +30,7 @@ interface IProps {
   eventBusStore: IEventBusStore;
   wpStore: WidgetPlatformStore;
   siteStructureStore: SiteStructureStore;
-  apolloClient?: ApolloClient<NormalizedCacheObject>;
+  graphQLClient: IGraphQLClient;
 }
 
 const SiteRoutes = (props: { routes: RouteObject[] }) => useRoutes(props.routes);
@@ -54,9 +55,11 @@ const App = (props: IProps) => {
           <EventBusStoreContext.Provider value={props.eventBusStore}>
             <SiteStructureStoreContext.Provider value={props.siteStructureStore}>
               <WPComponentsStoreContext.Provider value={props.widgetsStore}>
-                <WPApolloClientProvider client={props.apolloClient}>
-                  <SiteRoutes routes={props.siteStructureStore.routes} />
-                </WPApolloClientProvider>
+                <WPGraphQLClientContext.Provider value={props.graphQLClient}>
+                  <SplashScreen>
+                    <SiteRoutes routes={props.siteStructureStore.routes} />
+                  </SplashScreen>
+                </WPGraphQLClientContext.Provider>
               </WPComponentsStoreContext.Provider>
             </SiteStructureStoreContext.Provider>
           </EventBusStoreContext.Provider>

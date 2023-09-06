@@ -133,7 +133,7 @@ export class WidgetPlatformStore {
         )) as Record<string, FieldInfo>;
 
         if (!!widget.childWidgets) {
-          this.convertDetais(href, widget.childWidgets);
+          await this.convertDetais(href, widget.childWidgets);
         }
       }
     }

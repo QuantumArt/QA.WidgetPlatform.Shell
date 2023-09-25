@@ -1,12 +1,11 @@
 import React from 'react';
-import { IComponentInfo } from '../models/component-info';
+import { IComponentInfo, IStaticPropsEnvironment } from '../models/component-info';
 import { IWPComponent, WPComponentProps } from '../models/wp-component';
 import { IWPComponentStore } from '../wp-component-store';
 import { staticModules } from 'src/app-settings-shell/static-wpc-modules';
 import { Loader } from 'src/client/components/loader/loader';
-import { NotFoundComponent } from 'src/client/components/not-found/not-found-component';
+import { NotFoundComponent } from 'src/client/components/not-found-component/not-found-component';
 import { useAppSettingsShell } from '@quantumart/qp8-widget-platform-shell-core';
-import { IGraphQLClient } from '@quantumart/qp8-widget-platform-bridge';
 
 export class StaticWPComponentsStore implements IWPComponentStore {
   private lazyComponentCash: Record<
@@ -63,13 +62,14 @@ export class StaticWPComponentsStore implements IWPComponentStore {
   public allowedSubpageHandler = async (
     info: IComponentInfo,
     tailUrl: string,
+    wpProps: { [key: string]: unknown },
   ): Promise<boolean> => {
     try {
       const wpComponent = (await StaticWPComponentsStore.getPath(
         info.moduleName,
         info.componentAlias,
       )()) as IWPComponent;
-      return !!wpComponent.allowedSubpage ? wpComponent.allowedSubpage(tailUrl) : false;
+      return !!wpComponent.allowedSubpage ? wpComponent.allowedSubpage(tailUrl, wpProps) : false;
     } catch (ex) {
       console.error(ex);
       return false;
@@ -79,8 +79,7 @@ export class StaticWPComponentsStore implements IWPComponentStore {
   public getStaticPropsHandler = async (
     info: IComponentInfo,
     wpProps: { [key: string]: unknown },
-    href: string,
-    graphQLClient: IGraphQLClient,
+    staticPropsEnvironment: IStaticPropsEnvironment,
   ): Promise<{ [key: string]: unknown }> => {
     try {
       const wpComponent = (await StaticWPComponentsStore.getPath(
@@ -88,10 +87,7 @@ export class StaticWPComponentsStore implements IWPComponentStore {
         info.componentAlias,
       )()) as IWPComponent;
       return !!wpComponent.getStaticProps
-        ? await wpComponent.getStaticProps(wpProps, {
-            href,
-            graphQLClient,
-          })
+        ? await wpComponent.getStaticProps(wpProps, staticPropsEnvironment)
         : wpProps;
     } catch (ex) {
       console.error(ex);

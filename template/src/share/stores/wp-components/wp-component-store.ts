@@ -1,16 +1,18 @@
 import React from 'react';
-import { IComponentInfo } from './models/component-info';
+import { IComponentInfo, IStaticPropsEnvironment } from './models/component-info';
 import { WPComponentProps } from './models/wp-component';
-import { IGraphQLClient } from '@quantumart/qp8-widget-platform-bridge';
 
 export interface IWPComponentStore {
   getComponent(info: IComponentInfo): (props: WPComponentProps) => JSX.Element;
-  allowedSubpageHandler(info: IComponentInfo, tailUrl: string): Promise<boolean>;
+  allowedSubpageHandler(
+    info: IComponentInfo,
+    tailUrl: string,
+    wpProps: { [key: string]: unknown },
+  ): Promise<boolean>;
   getStaticPropsHandler(
     info: IComponentInfo,
     wpProps: { [key: string]: unknown },
-    href: string,
-    graphQLClient: IGraphQLClient,
+    staticPropsEnvironment: IStaticPropsEnvironment,
   ): Promise<{ [key: string]: unknown }>;
 }
 

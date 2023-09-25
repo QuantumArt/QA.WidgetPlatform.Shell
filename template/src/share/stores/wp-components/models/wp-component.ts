@@ -1,15 +1,12 @@
-import { IGraphQLClient } from '@quantumart/qp8-widget-platform-bridge';
+import { IStaticPropsEnvironment } from './component-info';
 
 export type WPComponentProps = JSX.IntrinsicAttributes;
 
 export interface IWPComponent {
   default: (props: WPComponentProps) => JSX.Element;
-  allowedSubpage?: (tailUrl: string) => boolean;
+  allowedSubpage?: (tailUrl: string, wpProps: { [key: string]: unknown }) => boolean;
   getStaticProps?: (
     props: { [key: string]: unknown },
-    environment: {
-      href: string;
-      graphQLClient: IGraphQLClient;
-    },
+    environment: IStaticPropsEnvironment,
   ) => { [key: string]: unknown };
 }

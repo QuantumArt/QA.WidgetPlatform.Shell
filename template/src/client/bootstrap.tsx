@@ -15,9 +15,9 @@ import {
 import { DynamicWPComponentsStore } from 'src/share/stores/wp-components/realizations/dynamic-wpc-store';
 import { StaticWPComponentsStore } from 'src/share/stores/wp-components/realizations/static-wpc-store';
 import { IWPComponentStore } from 'src/share/stores/wp-components/wp-component-store';
-import { NotFoundComponent } from './components/not-found/not-found-component';
 import { IEventBusStore, IGraphQLClient } from '@quantumart/qp8-widget-platform-bridge';
 import { GraphQLClient } from 'src/share/stores/graphql-client/graphql-client';
+import NotFoundPage from './components/not-found-page/not-found-page';
 
 interface IProps {
   appSettings: IAppSettingsShell;
@@ -39,12 +39,7 @@ const prepareClientApp = async (): Promise<IProps> => {
     ? new DynamicWPComponentsStore()
     : new StaticWPComponentsStore();
 
-  const siteStructureStore = new SiteStructureStore(
-    wpApiStore,
-    appSettings,
-    Page,
-    NotFoundComponent,
-  );
+  const siteStructureStore = new SiteStructureStore(wpApiStore, appSettings, Page, NotFoundPage);
   await siteStructureStore.init();
 
   const graphQLClient = new GraphQLClient(appSettings.widgetsPlatform?.graphql);

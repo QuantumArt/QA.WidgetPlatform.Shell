@@ -1,12 +1,11 @@
 import React from 'react';
 import { enrichmentHash } from 'src/utilities/url-helpers';
 import { IWPComponentStore } from '../wp-component-store';
-import { IComponentInfo } from '../models/component-info';
+import { IComponentInfo, IStaticPropsEnvironment } from '../models/component-info';
 import { IWPComponent, WPComponentProps } from '../models/wp-component';
 import { Loader } from 'src/client/components/loader/loader';
-import { NotFoundComponent } from 'src/client/components/not-found/not-found-component';
+import { NotFoundComponent } from 'src/client/components/not-found-component/not-found-component';
 import { useAppSettingsShell } from '@quantumart/qp8-widget-platform-shell-core';
-import { IGraphQLClient } from '@quantumart/qp8-widget-platform-bridge';
 
 export class DynamicWPComponentsStore implements IWPComponentStore {
   //Источники модулей
@@ -47,10 +46,11 @@ export class DynamicWPComponentsStore implements IWPComponentStore {
   public allowedSubpageHandler = async (
     info: IComponentInfo,
     tailUrl: string,
+    wpProps: { [key: string]: unknown },
   ): Promise<boolean> => {
     try {
       const wpComponent = await this.getComponentForEnvironment(info)();
-      return !!wpComponent.allowedSubpage ? wpComponent.allowedSubpage(tailUrl) : false;
+      return !!wpComponent.allowedSubpage ? wpComponent.allowedSubpage(tailUrl, wpProps) : false;
     } catch (ex) {
       console.error(ex);
       return false;
@@ -60,16 +60,12 @@ export class DynamicWPComponentsStore implements IWPComponentStore {
   public getStaticPropsHandler = async (
     info: IComponentInfo,
     wpProps: { [key: string]: unknown },
-    href: string,
-    graphQLClient: IGraphQLClient,
+    staticPropsEnvironment: IStaticPropsEnvironment,
   ): Promise<{ [key: string]: unknown }> => {
     try {
       const wpComponent = await this.getComponentForEnvironment(info)();
       return !!wpComponent.getStaticProps
-        ? await wpComponent.getStaticProps(wpProps, {
-            href,
-            graphQLClient,
-          })
+        ? await wpComponent.getStaticProps(wpProps, staticPropsEnvironment)
         : wpProps;
     } catch (ex) {
       console.error(ex);

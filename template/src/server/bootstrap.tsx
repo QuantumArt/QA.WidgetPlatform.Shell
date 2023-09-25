@@ -2,12 +2,14 @@ import express from 'express';
 import path from 'path';
 import compression from 'compression';
 import fs from 'fs';
+import NodeCache from 'node-cache';
 import { ChunkExtractor } from '@loadable/server';
 import { IAppSettingsShell } from '@quantumart/qp8-widget-platform-shell-core';
-//import { revalidate } from '@module-federation/utilities';
+import { ISiteModel } from './render';
 
 const port = 3200;
 const server = express();
+const siteCache = new NodeCache();
 
 //**** Настройка ответов ****/
 server.use(compression());
@@ -57,14 +59,13 @@ server.get('*', async (req, res) => {
   // });
   res.set('X-Content-Type-Options', 'nosniff');
   if (appsettings.ssr?.active) {
-    // //Кеш страниц
-    // let body: IBodyBuilderResult | undefined = siteCache.get(req.url);
-    // if (body == undefined) {
-    //   body = await bodyBuilder(req.url, appsettings);
-    //   siteCache.set(req.url, body, appsettings.ttl || 5);
-    // }
-    const bodyBuilder = (await import('./render')).default;
-    const body = await bodyBuilder(req.url, appsettings);
+    //Кеш страниц
+    let body: ISiteModel | undefined = siteCache.get(req.url);
+    if (body == undefined) {
+      const bodyBuilder = (await import('./render')).default;
+      body = await bodyBuilder(req.url, appsettings);
+      siteCache.set(req.url, body, appsettings.ssr?.ttl ?? 0);
+    }
     res.render('client', {
       scripts,
       styles,

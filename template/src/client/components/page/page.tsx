@@ -15,12 +15,12 @@ import {
 } from '@quantumart/qp8-widget-platform-bridge';
 import { useWidgetPlatformStore } from 'src/share/stores/widget-platform-context/widget-platform-context-store';
 import { Loader } from '../loader/loader';
-import { AbstractItemStore } from 'src/client/stores/abstract-item/abstract-item-store';
 import { WPItemStore, WPItemStoreContext } from 'src/client/stores/wp-item/wp-item-store';
 import { WPComponentProps } from 'src/share/stores/wp-components/models/wp-component';
 import { WPRoutesStore } from 'src/client/stores/wp-routes/wp-routes-store';
 import { useHref } from 'src/share/hooks/url-location';
-import { NotFoundComponent } from '../not-found/not-found-component';
+import { PageItemStore } from 'src/client/stores/abstract-item/page-item-store';
+import NotFoundPage from '../not-found-page/not-found-page';
 
 interface IProps {
   node: SiteNode;
@@ -47,7 +47,7 @@ const Page = (props: IProps): JSX.Element => {
       new WPRoutesStore(appSettingsShell, wpStore, siteStructure.structure, props.node, href ?? ''),
     [appSettingsShell, wpStore, siteStructure.structure, props.node, href],
   );
-  const abstractItemStore = React.useMemo(() => new AbstractItemStore(props.node), [props.node]);
+  const abstractItemStore = React.useMemo(() => new PageItemStore(props.node), [props.node]);
   const zoneStore = React.useMemo(() => new ZoneStore(props.node.id!, undefined), [props.node.id!]);
 
   const tailUrl = wpRoutesStore.getTailUrl();
@@ -68,7 +68,7 @@ const Page = (props: IProps): JSX.Element => {
   }, []);
 
   if (!allowedSubpage && wpRoutesStore.getTailUrl().length > 0) {
-    return <NotFoundComponent />;
+    return <NotFoundPage />;
   }
 
   if (!!wpProps && !!itemStore) {

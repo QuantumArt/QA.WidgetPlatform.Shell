@@ -3,8 +3,8 @@ import { WidgetDetails, useAppSettingsShell } from '@quantumart/qp8-widget-platf
 import { ZoneStore } from 'src/client/stores/zone/zone-store';
 import { useWpcStore } from 'src/share/stores/wp-components/wp-component-store';
 import { AbstractItemContext, ZoneStoreContext } from '@quantumart/qp8-widget-platform-bridge';
-import { AbstractItemStore } from 'src/client/stores/abstract-item/abstract-item-store';
 import { WPItemStore, WPItemStoreContext } from 'src/client/stores/wp-item/wp-item-store';
+import { WidgetItemStore } from 'src/client/stores/abstract-item/widget-item-store';
 
 interface IProps {
   widgetDetails: WidgetDetails;
@@ -17,7 +17,7 @@ const WPWidget = ({ widgetDetails }: IProps): JSX.Element => {
     [widgetDetails.childWidgets ?? {}],
   );
   const abstractItemStore = React.useMemo(
-    () => new AbstractItemStore(widgetDetails),
+    () => new WidgetItemStore(widgetDetails),
     [widgetDetails],
   );
   const zoneStore = React.useMemo(

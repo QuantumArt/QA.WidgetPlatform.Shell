@@ -1,5 +1,4 @@
 import React from 'react';
-import _ from 'lodash';
 import { WPComponentProps } from '../wp-components/models/wp-component';
 import {
   WPApiStore,
@@ -107,8 +106,10 @@ export class WidgetPlatformStore {
         componentAlias: node.nodeType!,
       },
       nodwData.details ?? {},
-      href,
-      this.graphQLClient,
+      {
+        href,
+        graphQLClient: this.graphQLClient,
+      },
     )) as Record<string, FieldInfo>;
   };
 
@@ -128,8 +129,10 @@ export class WidgetPlatformStore {
             componentAlias: widget.nodeType!,
           },
           widget.details ?? {},
-          href,
-          this.graphQLClient,
+          {
+            href,
+            graphQLClient: this.graphQLClient,
+          },
         )) as Record<string, FieldInfo>;
 
         if (!!widget.childWidgets) {
@@ -142,6 +145,7 @@ export class WidgetPlatformStore {
   public getAllowedSubpage = async (node: SiteNode, tailUrl: string): Promise<boolean> => {
     const fcdm =
       this.appSetting.widgetsPlatform.forcedConfigurationOfDynamicModules?.[node.nodeType!];
+    const nodwData = await this.wpApi.node(node.id!);
     return await this.wpComponentStore.allowedSubpageHandler(
       {
         url: fcdm?.url ?? node.frontModuleUrl ?? '', //TODO получать с node
@@ -149,6 +153,7 @@ export class WidgetPlatformStore {
         componentAlias: node.nodeType!,
       },
       tailUrl,
+      nodwData.details ?? {},
     );
   };
 }

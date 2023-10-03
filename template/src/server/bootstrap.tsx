@@ -4,8 +4,8 @@ import compression from 'compression';
 import fs from 'fs';
 import NodeCache from 'node-cache';
 import { ChunkExtractor } from '@loadable/server';
-import { IAppSettingsShell } from '@quantumart/qp8-widget-platform-shell-core';
 import { ISiteModel } from './render';
+import { IAppSettingsShell } from 'src/share/app-settings-shell';
 
 const port = 3200;
 const server = express();
@@ -70,6 +70,7 @@ server.get('*', async (req, res) => {
       scripts,
       styles,
       component: body.html,
+      componentsStyles: body.componentsStyles,
       helmet: body.helmet,
     });
   } else {
@@ -77,6 +78,7 @@ server.get('*', async (req, res) => {
       scripts,
       styles,
       component: '',
+      componentsStyles: '',
       helmet: {},
     });
   }

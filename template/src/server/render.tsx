@@ -3,14 +3,11 @@ import stream from 'stream';
 import App from 'src/client/App';
 import Page from 'src/client/components/page/page';
 import EventBus from 'js-event-bus';
+import NotFoundPage from 'src/client/components/not-found-page/not-found-page';
 import { renderToPipeableStream } from 'react-dom/server';
 import { StaticRouter } from 'react-router-dom/server';
 import { HelmetData, HelmetProvider, HelmetServerState } from 'react-helmet-async';
-import {
-  WPApiStore,
-  IAppSettingsShell,
-  SiteStructureStore,
-} from '@quantumart/qp8-widget-platform-shell-core';
+import { WPApiStore, SiteStructureStore } from '@quantumart/qp8-widget-platform-shell-core';
 import { IHelmetString, convertHelmetToString } from 'src/utilities/helmet-helpers';
 import { WidgetPlatformStore } from 'src/share/stores/widget-platform-context/widget-platform-context-store';
 import { IWPComponentStore } from 'src/share/stores/wp-components/wp-component-store';
@@ -18,7 +15,8 @@ import { StaticWPComponentsStore } from 'src/share/stores/wp-components/realizat
 import { HrefContext } from 'src/share/hooks/url-location';
 import { IEventBusStore, IGraphQLClient } from '@quantumart/qp8-widget-platform-bridge';
 import { GraphQLClient } from 'src/share/stores/graphql-client/graphql-client';
-import NotFoundPage from 'src/client/components/not-found-page/not-found-page';
+import { ServerStyleSheet } from 'styled-components';
+import { IAppSettingsShell } from 'src/share/app-settings-shell';
 
 interface IProps {
   appSettings: IAppSettingsShell;
@@ -65,12 +63,14 @@ const prepareServerApp = async (url: string, appSettings: IAppSettingsShell): Pr
 
 export interface ISiteModel {
   html: string;
+  componentsStyles: string;
   helmet: IHelmetString;
 }
 
 async function bodyBuilder(url: string, appSettings: IAppSettingsShell): Promise<ISiteModel> {
   try {
     const props = await prepareServerApp(url, appSettings);
+    const sheet = new ServerStyleSheet();
     const helmetContext: { helmet?: HelmetServerState } = {};
     const render = new Promise<string>((resolve, reject) => {
       const buffer: Buffer[] = [];
@@ -86,20 +86,22 @@ async function bodyBuilder(url: string, appSettings: IAppSettingsShell): Promise
       });
 
       const pipeableStream = renderToPipeableStream(
-        <HelmetProvider context={helmetContext}>
-          <HrefContext.Provider value={url}>
-            <StaticRouter location={url}>
-              <App
-                appSettings={appSettings}
-                siteStructureStore={props.siteStructureStore}
-                eventBusStore={props.eventBusStore}
-                wpStore={props.wpStore}
-                widgetsStore={props.wpComponentStore}
-                graphQLClient={props.graphQLClient}
-              />
-            </StaticRouter>
-          </HrefContext.Provider>
-        </HelmetProvider>,
+        sheet.collectStyles(
+          <HelmetProvider context={helmetContext}>
+            <HrefContext.Provider value={url}>
+              <StaticRouter location={url}>
+                <App
+                  appSettings={appSettings}
+                  siteStructureStore={props.siteStructureStore}
+                  eventBusStore={props.eventBusStore}
+                  wpStore={props.wpStore}
+                  widgetsStore={props.wpComponentStore}
+                  graphQLClient={props.graphQLClient}
+                />
+              </StaticRouter>
+            </HrefContext.Provider>
+          </HelmetProvider>,
+        ),
         {
           //onShellReady() {},
           onAllReady() {
@@ -116,6 +118,7 @@ async function bodyBuilder(url: string, appSettings: IAppSettingsShell): Promise
     const helmet = helmetContext?.helmet ?? new HelmetData({}).context.helmet;
     return {
       html,
+      componentsStyles: sheet.getStyleTags(),
       helmet: convertHelmetToString(helmet),
     };
   } catch (ex) {
@@ -123,6 +126,7 @@ async function bodyBuilder(url: string, appSettings: IAppSettingsShell): Promise
     const helmet = new HelmetData({}).context.helmet;
     return {
       html: '',
+      componentsStyles: '',
       helmet: convertHelmetToString(helmet),
     };
   }

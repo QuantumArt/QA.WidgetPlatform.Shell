@@ -34,6 +34,9 @@ const shared = {
   'react-router-dom': {
     singleton: true,
   },
+  'styled-components': {
+    singleton: true,
+  },
   '@quantumart/qp8-widget-platform-bridge': {
     singleton: true,
   },

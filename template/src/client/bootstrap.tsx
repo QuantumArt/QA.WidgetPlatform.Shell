@@ -3,21 +3,18 @@ import App from './App';
 import Page from './components/page/page';
 import ReactDOMClient from 'react-dom/client';
 import EventBus from 'js-event-bus';
+import NotFoundPage from './components/not-found-page/not-found-page';
 import { HelmetProvider } from 'react-helmet-async';
 import { BrowserRouter } from 'react-router-dom';
 import { loadSettingsFromFile } from '../utilities/settings-loader';
 import { WidgetPlatformStore } from 'src/share/stores/widget-platform-context/widget-platform-context-store';
-import {
-  WPApiStore,
-  SiteStructureStore,
-  IAppSettingsShell,
-} from '@quantumart/qp8-widget-platform-shell-core';
+import { WPApiStore, SiteStructureStore } from '@quantumart/qp8-widget-platform-shell-core';
 import { DynamicWPComponentsStore } from 'src/share/stores/wp-components/realizations/dynamic-wpc-store';
 import { StaticWPComponentsStore } from 'src/share/stores/wp-components/realizations/static-wpc-store';
 import { IWPComponentStore } from 'src/share/stores/wp-components/wp-component-store';
 import { IEventBusStore, IGraphQLClient } from '@quantumart/qp8-widget-platform-bridge';
 import { GraphQLClient } from 'src/share/stores/graphql-client/graphql-client';
-import NotFoundPage from './components/not-found-page/not-found-page';
+import { IAppSettingsShell } from 'src/share/app-settings-shell';
 
 interface IProps {
   appSettings: IAppSettingsShell;

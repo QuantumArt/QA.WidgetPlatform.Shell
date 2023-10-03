@@ -4,7 +4,6 @@ import {
   SiteStructureStore,
   SiteStructureStoreContext,
   AppSettingsShellContext,
-  IAppSettingsShell,
 } from '@quantumart/qp8-widget-platform-shell-core';
 import { Loader } from './components/loader/loader';
 import {
@@ -21,8 +20,10 @@ import {
   IGraphQLClient,
   WPGraphQLClientContext,
 } from '@quantumart/qp8-widget-platform-bridge';
-import './assets/style/style.scss';
 import { SplashScreen } from './components/splash-screen/splash-screen';
+import { NormalizeStyles } from './styles/normalize.styles';
+import { GlobalStyle } from './styles/global.styles';
+import { IAppSettingsShell } from 'src/share/app-settings-shell';
 
 interface IProps {
   appSettings: IAppSettingsShell;
@@ -56,7 +57,9 @@ const App = (props: IProps) => {
             <SiteStructureStoreContext.Provider value={props.siteStructureStore}>
               <WPComponentsStoreContext.Provider value={props.widgetsStore}>
                 <WPGraphQLClientContext.Provider value={props.graphQLClient}>
-                  <SplashScreen>
+                  <NormalizeStyles />
+                  <GlobalStyle />
+                  <SplashScreen active={props.appSettings.activeSplashScreen ?? false}>
                     <SiteRoutes routes={props.siteStructureStore.routes} />
                   </SplashScreen>
                 </WPGraphQLClientContext.Provider>

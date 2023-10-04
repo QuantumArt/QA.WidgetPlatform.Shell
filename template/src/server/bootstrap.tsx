@@ -6,6 +6,7 @@ import NodeCache from 'node-cache';
 import { ChunkExtractor } from '@loadable/server';
 import { ISiteModel } from './render';
 import { IAppSettingsShell } from 'src/share/app-settings-shell';
+import { merge } from 'lodash';
 
 const port = 3200;
 const server = express();
@@ -28,13 +29,25 @@ server.set('view engine', 'ejs');
 server.engine('ejs', require('ejs').__express);
 server.set('views', path.join(__dirname, 'views'));
 
-//**** Настройки ****/
-const appsettings = JSON.parse(
-  fs.readFileSync(path.join(__dirname, 'settings.json'), 'utf-8'),
-) as IAppSettingsShell;
+//**** Грузим настройки ****/
+const baseSettings = JSON.parse(
+  fs.readFileSync(path.join(__dirname, 'base-settings.json'), 'utf-8'),
+);
+
+const clientSettings = JSON.parse(
+  fs.readFileSync(path.join(__dirname, 'client-settings.json'), 'utf-8'),
+);
+
+const serverSettings = JSON.parse(
+  fs.readFileSync(path.join(__dirname, 'server-settings.json'), 'utf-8'),
+);
+
+const clientAppsettings = merge(baseSettings, clientSettings) as IAppSettingsShell;
+const serverAppsettings = merge(baseSettings, serverSettings) as IAppSettingsShell;
+//^^^^^^^^^^^^^^^^^^^^^^
 
 const clientExtractor = new ChunkExtractor({
-  publicPath: appsettings.publicPath ?? '/',
+  publicPath: serverAppsettings.publicPath ?? '/',
   statsFile: path.join(__dirname, '../static/client/loadable-stats.json'),
 });
 
@@ -42,16 +55,16 @@ const scripts = clientExtractor.getScriptTags();
 const styles = clientExtractor.getStyleTags();
 
 server.get('/settings.json', async (req, res) => {
-  res.json(appsettings);
+  res.json(clientAppsettings);
 });
 
-if (appsettings.activeSiteMap) {
+if (serverAppsettings.activeSiteMap) {
   server.get('/sitemap.xml', async (req, res) => {
     const sitemapBuilder = (await import('./sitemap')).default;
     const pages = await sitemapBuilder(
       `${req.protocol}://${req.get('host')}`,
       req.url,
-      appsettings,
+      serverAppsettings,
     );
     res.render('sitemap', { pages });
   });
@@ -70,13 +83,13 @@ server.get('*', async (req, res) => {
   //   }
   // });
   res.set('X-Content-Type-Options', 'nosniff');
-  if (appsettings.ssr?.active) {
+  if (serverAppsettings.ssr?.active) {
     //Кеш страниц
     let body: ISiteModel | undefined = siteCache.get(req.url);
     if (body == undefined) {
       const bodyBuilder = (await import('./render')).default;
-      body = await bodyBuilder(`${req.protocol}://${req.get('host')}`, req.url, appsettings);
-      siteCache.set(req.url, body, appsettings.ssr?.ttl ?? 0);
+      body = await bodyBuilder(`${req.protocol}://${req.get('host')}`, req.url, serverAppsettings);
+      siteCache.set(req.url, body, serverAppsettings.ssr?.ttl ?? 0);
     }
     res.render('client', {
       scripts,

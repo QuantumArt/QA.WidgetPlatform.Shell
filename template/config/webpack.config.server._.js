@@ -24,8 +24,7 @@ const webpackConfig = env => ({
         { context: 'src/server', from: 'views', to: 'views' },
         {
           context: 'src/app-settings-shell',
-          from: 'settings.json',
-          to: 'settings.json',
+          from: '*-settings.json',
         },
       ],
     }),

@@ -1,6 +1,5 @@
 {
   "widgetsPlatform": {
-    "apiUrl": "https://wp-api.demositerus.qsupport.ru",
     "graphql": null,
     "dnsName": "wp-template.qsupport.ru",
     "forcedConfigurationOfDynamicModules": {

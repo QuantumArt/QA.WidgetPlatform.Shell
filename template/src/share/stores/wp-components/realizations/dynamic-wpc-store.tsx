@@ -22,8 +22,6 @@ export class DynamicWPComponentsStore implements IWPComponentStore {
     Record<string, React.LazyExoticComponent<(props: JSX.IntrinsicAttributes) => JSX.Element>>
   > = {};
 
-  constructor(private appSettings: IAppSettingsShell) {}
-
   public getComponent = (info: IComponentInfo): ((props: WPComponentProps) => JSX.Element) => {
     //------- Load component -----
     if (!this.lazyComponentCache[info.moduleName]) {

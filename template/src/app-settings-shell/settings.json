@@ -18,8 +18,9 @@
       }
     }
   },
-  "useDynamicModules": false,
+  "activeSiteMap": true,
   "activeSplashScreen": false,
+  "useDynamicModules": false,
   "ssr": {
     "active": true,
     "ttl": 30

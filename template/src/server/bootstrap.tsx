@@ -45,6 +45,18 @@ server.get('/settings.json', async (req, res) => {
   res.json(appsettings);
 });
 
+if (appsettings.activeSiteMap) {
+  server.get('/sitemap.xml', async (req, res) => {
+    const sitemapBuilder = (await import('./sitemap')).default;
+    const pages = await sitemapBuilder(
+      `${req.protocol}://${req.get('host')}`,
+      req.url,
+      appsettings,
+    );
+    res.render('sitemap', { pages });
+  });
+}
+
 //**** Очистка загруженных модулей ****/
 // global.clearRoutes = () => {
 //   server._router.stack = server._router.stack.filter((k: any) => !(k && k.route && k.route.path));
@@ -63,7 +75,7 @@ server.get('*', async (req, res) => {
     let body: ISiteModel | undefined = siteCache.get(req.url);
     if (body == undefined) {
       const bodyBuilder = (await import('./render')).default;
-      body = await bodyBuilder(req.url, appsettings);
+      body = await bodyBuilder(`${req.protocol}://${req.get('host')}`, req.url, appsettings);
       siteCache.set(req.url, body, appsettings.ssr?.ttl ?? 0);
     }
     res.render('client', {

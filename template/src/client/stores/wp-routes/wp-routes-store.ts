@@ -14,13 +14,13 @@ export class WPRoutesStore implements IWPRoutesStore {
     private readonly appSetting: IAppSettingsShell,
     private readonly widgetPlatformStore: WidgetPlatformStore,
     private readonly structure: undefined | SiteNode,
-    private readonly node: SiteNode,
+    private readonly node: undefined | SiteNode,
     private readonly href: string,
   ) {}
 
   getBreadcrumbs = (): BreadcrumbItem[] => {
     const breadcrumbs = getBreadcrumbs(
-      this.node.id!,
+      this.node!.id!,
       this.homeTitle,
       this.appSetting.publicPath,
       this.structure,
@@ -41,11 +41,11 @@ export class WPRoutesStore implements IWPRoutesStore {
 
   getTailUrl = (): string => {
     const tailUrl = getTailUrl(
-      this.node.id!,
+      this.node!.id!,
       this.appSetting.publicPath,
       this.structure,
       this.widgetPlatformStore.pageHierarchy,
-      this.href
+      this.href,
     );
     return tailUrl;
   };

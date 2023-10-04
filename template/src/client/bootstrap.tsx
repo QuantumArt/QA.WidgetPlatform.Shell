@@ -33,7 +33,7 @@ const prepareClientApp = async (): Promise<IProps> => {
   const eventBusStore = new EventBus();
 
   const wpComponentStore = appSettings.useDynamicModules
-    ? new DynamicWPComponentsStore(appSettings)
+    ? new DynamicWPComponentsStore()
     : new StaticWPComponentsStore();
 
   const siteStructureStore = new SiteStructureStore(wpApiStore, appSettings, Page, NotFoundPage);

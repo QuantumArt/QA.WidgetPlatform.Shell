@@ -17,6 +17,7 @@ import { IEventBusStore, IGraphQLClient } from '@quantumart/qp8-widget-platform-
 import { GraphQLClient } from 'src/share/stores/graphql-client/graphql-client';
 import { ServerStyleSheet } from 'styled-components';
 import { IAppSettingsShell } from 'src/share/app-settings-shell';
+import { DynamicWPComponentsStore } from 'src/share/stores/wp-components/realizations/dynamic-wpc-store';
 
 interface IProps {
   appSettings: IAppSettingsShell;
@@ -34,7 +35,9 @@ const prepareServerApp = async (url: string, appSettings: IAppSettingsShell): Pr
   const eventBusStore = new EventBus();
 
   //Грузить компоненты на сервере можно только в статике сейчас
-  const wpComponentStore: IWPComponentStore = new StaticWPComponentsStore();
+  const wpComponentStore: IWPComponentStore = appSettings.useDynamicModules
+    ? new DynamicWPComponentsStore(appSettings)
+    : new StaticWPComponentsStore();
 
   const siteStructureStore = new SiteStructureStore(wpApiStore, appSettings, Page, NotFoundPage);
   await siteStructureStore.init();

@@ -5,42 +5,44 @@ import { IComponentInfo, IStaticPropsEnvironment } from '../models/component-inf
 import { IWPComponent, WPComponentProps } from '../models/wp-component';
 import { Loader } from 'src/client/components/loader/loader';
 import { NotFoundComponent } from 'src/client/components/not-found-component/not-found-component';
-import { useAppSettingsShell } from '@quantumart/qp8-widget-platform-shell-core';
+import { IAppSettingsShell } from 'src/share/app-settings-shell';
+//import { injectScript, WebpackRemoteContainer } from '@module-federation/utilities';
+
+//@ts-ignore fake import needed in order to tell webpack to include chunk loading runtime code
+//import('fake');
 
 export class DynamicWPComponentsStore implements IWPComponentStore {
   //Источники модулей
-  private sourcesModules: { [key: string]: Promise<void> } = {};
+  //private sourcesNodeModulesCache: { [key: string]: Promise<WebpackRemoteContainer> } = {};
+  private sourcesBrowserModulesCache: { [key: string]: Promise<void> } = {};
+
+  private fileCache: Record<string, Record<string, Promise<IWPComponent>>> = {};
+  private lazyComponentCache: Record<
+    string,
+    Record<string, React.LazyExoticComponent<(props: JSX.IntrinsicAttributes) => JSX.Element>>
+  > = {};
+
+  constructor(private appSettings: IAppSettingsShell) {}
 
   public getComponent = (info: IComponentInfo): ((props: WPComponentProps) => JSX.Element) => {
-    const appSettings = useAppSettingsShell();
-    const wpComponentPromise = this.getComponentForEnvironment(info);
-
-    if (!!appSettings.ssr?.active) {
-      const LazyConponent = React.lazy(wpComponentPromise);
-      return (props: WPComponentProps) => (
-        <React.Suspense fallback={<Loader />}>
-          <LazyConponent {...props} />
-        </React.Suspense>
-      );
+    //------- Load component -----
+    if (!this.lazyComponentCache[info.moduleName]) {
+      this.lazyComponentCache[info.moduleName] = {};
     }
 
-    return (props: WPComponentProps) => {
-      const [wpComponent, setWPComponent] = React.useState<IWPComponent>();
+    if (!this.lazyComponentCache[info.moduleName][info.componentAlias]) {
+      this.lazyComponentCache[info.moduleName][info.componentAlias] = React.lazy(() =>
+        this.getWPComponent(info),
+      );
+    }
+    //^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-      const lazyload = async () => {
-        setWPComponent(await wpComponentPromise());
-      };
-
-      React.useEffect(() => {
-        lazyload();
-      }, []);
-
-      if (!!wpComponent) {
-        return <wpComponent.default {...props} />;
-      }
-
-      return <Loader />;
-    };
+    const LazyConponent = this.lazyComponentCache[info.moduleName][info.componentAlias];
+    return (props: WPComponentProps) => (
+      <React.Suspense fallback={<Loader />}>
+        <LazyConponent {...props} />
+      </React.Suspense>
+    );
   };
 
   public allowedSubpageHandler = async (
@@ -49,7 +51,7 @@ export class DynamicWPComponentsStore implements IWPComponentStore {
     wpProps: { [key: string]: unknown },
   ): Promise<boolean> => {
     try {
-      const wpComponent = await this.getComponentForEnvironment(info)();
+      const wpComponent = await this.getWPComponent(info);
       return !!wpComponent.allowedSubpage ? wpComponent.allowedSubpage(tailUrl, wpProps) : false;
     } catch (ex) {
       console.error(ex);
@@ -63,7 +65,7 @@ export class DynamicWPComponentsStore implements IWPComponentStore {
     staticPropsEnvironment: IStaticPropsEnvironment,
   ): Promise<{ [key: string]: unknown }> => {
     try {
-      const wpComponent = await this.getComponentForEnvironment(info)();
+      const wpComponent = await this.getWPComponent(info);
       return !!wpComponent.getStaticProps
         ? await wpComponent.getStaticProps(wpProps, staticPropsEnvironment)
         : wpProps;
@@ -73,17 +75,58 @@ export class DynamicWPComponentsStore implements IWPComponentStore {
     }
   };
 
-  private getComponentForEnvironment = (info: IComponentInfo) =>
-    typeof window === 'undefined'
-      ? () => this.getComponentInNode(info)
-      : () => this.getComponentInBrowser(info);
+  //---------------------------------------------------------------------------------------------------------
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  private getWPComponent = (info: IComponentInfo): Promise<IWPComponent> => {
+    if (!this.fileCache[info.moduleName]) {
+      this.fileCache[info.moduleName] = {};
+    }
+
+    if (!this.fileCache[info.moduleName][info.componentAlias]) {
+      if (typeof window === 'undefined') {
+        this.fileCache[info.moduleName][info.componentAlias] = this.getComponentInNode(info);
+      } else {
+        this.fileCache[info.moduleName][info.componentAlias] = this.getComponentInBrowser(info);
+      }
+    }
+
+    return this.fileCache[info.moduleName][info.componentAlias];
+  };
+
   private getComponentInNode = async (info: IComponentInfo): Promise<IWPComponent> => {
-    //TODO ---
     return {
       default: NotFoundComponent,
     };
+
+    // if (!info.url) {
+    //   return {
+    //     default: NotFoundComponent,
+    //   };
+    // }
+    // let nodeModulesCache: WebpackRemoteContainer;
+    // try {
+    //   //Проверяем наличие источника в сторе, если нет то добавляем его в загрузки
+    //   if (!this.sourcesNodeModulesCache[info.url]) {
+    //     this.sourcesNodeModulesCache[info.url] = injectScript({
+    //       global: info.moduleName,
+    //       url: info.url,
+    //     });
+    //   }
+    //   nodeModulesCache = await this.sourcesNodeModulesCache[info.url];
+    // } catch (ex) {
+    //   console.error(`Модуль "${info.moduleName}" не загружен!`, ex);
+    //   return {
+    //     default: NotFoundComponent,
+    //   };
+    // }
+    // try {
+    //   return await nodeModulesCache.get(`./${info.componentAlias}`)();
+    // } catch (ex) {
+    //   console.error(`Модуль "${info.moduleName}" не загружен!`, ex);
+    //   return {
+    //     default: NotFoundComponent,
+    //   };
+    // }
   };
 
   private getComponentInBrowser = async (info: IComponentInfo): Promise<IWPComponent> => {
@@ -94,8 +137,8 @@ export class DynamicWPComponentsStore implements IWPComponentStore {
     }
     try {
       //Проверяем наличие источника в сторе, если нет то добавляем его в загрузки
-      if (!this.sourcesModules[info.url]) {
-        this.sourcesModules[info.url] = new Promise<void>((success, reject) => {
+      if (!this.sourcesBrowserModulesCache[info.url]) {
+        this.sourcesBrowserModulesCache[info.url] = new Promise<void>((success, reject) => {
           const element = document.createElement('script');
           element.src = enrichmentHash(`${info.url}/client/remoteEntry.js`);
           element.type = 'text/javascript';
@@ -105,7 +148,7 @@ export class DynamicWPComponentsStore implements IWPComponentStore {
           document.head.appendChild(element);
         });
       }
-      await this.sourcesModules[info.url];
+      await this.sourcesBrowserModulesCache[info.url];
     } catch (ex) {
       console.error(`Модуль "${info.moduleName}" не загружен!`, ex);
       return {

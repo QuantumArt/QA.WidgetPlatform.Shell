@@ -6,10 +6,12 @@ interface IProps {
   fallback?: React.ReactNode;
 }
 
-export const Layout = (props: IProps): JSX.Element => (
-  <>
-    <WidgetZone name="SiteHeaderZone" />
-    <main className="main">{props.children}</main>
-    <WidgetZone name="SiteFooterZone" />
-  </>
-);
+export const Layout = (props: IProps): JSX.Element => {
+  return (
+    <>
+      <WidgetZone name="SiteHeaderZone" />
+      <main className="main">{props.children}</main>
+      <WidgetZone name="SiteFooterZone" />
+    </>
+  );
+};

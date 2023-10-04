@@ -5,58 +5,33 @@ import { IWPComponentStore } from '../wp-component-store';
 import { staticModules } from 'src/app-settings-shell/static-wpc-modules';
 import { Loader } from 'src/client/components/loader/loader';
 import { NotFoundComponent } from 'src/client/components/not-found-component/not-found-component';
-import { useAppSettingsShell } from '@quantumart/qp8-widget-platform-shell-core';
 
 export class StaticWPComponentsStore implements IWPComponentStore {
-  private lazyComponentCash: Record<
+  private fileCache: Record<string, Record<string, Promise<IWPComponent>>> = {};
+  private lazyComponentCache: Record<
     string,
     Record<string, React.LazyExoticComponent<(props: JSX.IntrinsicAttributes) => JSX.Element>>
   > = {};
 
   public getComponent = (info: IComponentInfo): ((props: WPComponentProps) => JSX.Element) => {
-    const appSettings = useAppSettingsShell();
-
-    if (!!appSettings.ssr?.active) {
-      if (!this.lazyComponentCash[info.moduleName]) {
-        this.lazyComponentCash[info.moduleName] = {};
-      }
-
-      if (!this.lazyComponentCash[info.moduleName][info.componentAlias]) {
-        this.lazyComponentCash[info.moduleName][info.componentAlias] = React.lazy(
-          StaticWPComponentsStore.getPath(info.moduleName, info.componentAlias),
-        );
-      }
-
-      const LazyConponent = this.lazyComponentCash[info.moduleName][info.componentAlias];
-      return (props: WPComponentProps) => (
-        <React.Suspense fallback={<Loader />}>
-          <LazyConponent {...props} />
-        </React.Suspense>
-      );
+    //------- Load component -----
+    if (!this.lazyComponentCache[info.moduleName]) {
+      this.lazyComponentCache[info.moduleName] = {};
     }
 
-    const wpComponentPromise = StaticWPComponentsStore.getPath(
-      info.moduleName,
-      info.componentAlias,
+    if (!this.lazyComponentCache[info.moduleName][info.componentAlias]) {
+      this.lazyComponentCache[info.moduleName][info.componentAlias] = React.lazy(() =>
+        this.getWPComponent(info),
+      );
+    }
+    //^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+    const LazyConponent = this.lazyComponentCache[info.moduleName][info.componentAlias];
+    return (props: WPComponentProps) => (
+      <React.Suspense fallback={<Loader />}>
+        <LazyConponent {...props} />
+      </React.Suspense>
     );
-
-    return (props: WPComponentProps) => {
-      const [wpComponent, setWPComponent] = React.useState<IWPComponent>();
-
-      const lazyload = async () => {
-        setWPComponent(await wpComponentPromise());
-      };
-
-      React.useEffect(() => {
-        lazyload();
-      }, []);
-
-      if (!!wpComponent) {
-        return <wpComponent.default {...props} />;
-      }
-
-      return <Loader />;
-    };
   };
 
   public allowedSubpageHandler = async (
@@ -65,10 +40,7 @@ export class StaticWPComponentsStore implements IWPComponentStore {
     wpProps: { [key: string]: unknown },
   ): Promise<boolean> => {
     try {
-      const wpComponent = (await StaticWPComponentsStore.getPath(
-        info.moduleName,
-        info.componentAlias,
-      )()) as IWPComponent;
+      const wpComponent = await this.getWPComponent(info);
       return !!wpComponent.allowedSubpage ? wpComponent.allowedSubpage(tailUrl, wpProps) : false;
     } catch (ex) {
       console.error(ex);
@@ -82,10 +54,7 @@ export class StaticWPComponentsStore implements IWPComponentStore {
     staticPropsEnvironment: IStaticPropsEnvironment,
   ): Promise<{ [key: string]: unknown }> => {
     try {
-      const wpComponent = (await StaticWPComponentsStore.getPath(
-        info.moduleName,
-        info.componentAlias,
-      )()) as IWPComponent;
+      const wpComponent = await this.getWPComponent(info);
       return !!wpComponent.getStaticProps
         ? await wpComponent.getStaticProps(wpProps, staticPropsEnvironment)
         : wpProps;
@@ -94,6 +63,23 @@ export class StaticWPComponentsStore implements IWPComponentStore {
       return wpProps;
     }
   };
+
+  private getWPComponent = (info: IComponentInfo): Promise<IWPComponent> => {
+    if (!this.fileCache[info.moduleName]) {
+      this.fileCache[info.moduleName] = {};
+    }
+
+    if (!this.fileCache[info.moduleName][info.componentAlias]) {
+      this.fileCache[info.moduleName][info.componentAlias] = StaticWPComponentsStore.getPath(
+        info.moduleName,
+        info.componentAlias,
+      )();
+    }
+
+    return this.fileCache[info.moduleName][info.componentAlias];
+  };
+
+  //---------------------------------------------------------------------------------------------------------
 
   private static getPath = (moduleName: string, componentAlias: string) => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any

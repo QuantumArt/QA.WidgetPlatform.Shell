@@ -17,6 +17,7 @@
       }
     }
   },
+  "baseURL": "/",
   "activeSiteMap": true,
   "activeSplashScreen": false,
   "useDynamicModules": false,

@@ -22,7 +22,7 @@ export class WPRoutesStore implements IWPRoutesStore {
     const breadcrumbs = getBreadcrumbs(
       this.node!.id!,
       this.homeTitle,
-      this.appSetting.publicPath,
+      this.appSetting.baseURL,
       this.structure,
       this.widgetPlatformStore.pageHierarchy,
     );
@@ -33,7 +33,7 @@ export class WPRoutesStore implements IWPRoutesStore {
     const siteMap = getSiteMap(
       maxDeepOrigin,
       this.homeTitle,
-      this.appSetting.publicPath,
+      this.appSetting.baseURL,
       this.structure,
     );
     return siteMap;
@@ -42,7 +42,7 @@ export class WPRoutesStore implements IWPRoutesStore {
   getTailUrl = (): string => {
     const tailUrl = getTailUrl(
       this.node!.id!,
-      this.appSetting.publicPath,
+      this.appSetting.baseURL,
       this.structure,
       this.widgetPlatformStore.pageHierarchy,
       this.href,

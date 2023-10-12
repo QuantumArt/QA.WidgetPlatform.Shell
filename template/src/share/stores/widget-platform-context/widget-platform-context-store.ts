@@ -56,7 +56,7 @@ export class WidgetPlatformStore {
 
     const tailUrl = getTailUrl(
       page.id!,
-      this.appSetting.publicPath,
+      this.appSetting.baseURL,
       this.structure,
       this.pageHierarchy,
       href,

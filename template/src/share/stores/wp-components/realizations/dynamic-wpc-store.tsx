@@ -5,7 +5,7 @@ import { IComponentInfo, IStaticPropsEnvironment } from '../models/component-inf
 import { IWPComponent, WPComponentProps } from '../models/wp-component';
 import { Loader } from 'src/client/components/loader/loader';
 import { NotFoundComponent } from 'src/client/components/not-found-component/not-found-component';
-import { IAppSettingsShell } from 'src/share/app-settings-shell';
+
 //import { injectScript, WebpackRemoteContainer } from '@module-federation/utilities';
 
 //@ts-ignore fake import needed in order to tell webpack to include chunk loading runtime code

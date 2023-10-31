@@ -30,12 +30,23 @@ export class WPRoutesStore implements IWPRoutesStore {
   };
 
   getSiteMap = (maxDeepOrigin?: number): PageNode[] => {
-    const siteMap = getSiteMap(
-      maxDeepOrigin,
-      this.homeTitle,
-      this.appSetting.baseURL,
-      this.structure,
-    );
+    const siteMap = getSiteMap({
+      maxDeepOrigin: maxDeepOrigin,
+      homeTitle: this.homeTitle,
+      baseURL: this.appSetting.baseURL,
+      structure: this.structure,
+    });
+    return siteMap;
+  };
+
+  getFullSiteMap = (maxDeepOrigin?: number): PageNode[] => {
+    const siteMap = getSiteMap({
+      maxDeepOrigin: 1000,
+      homeTitle: this.homeTitle,
+      baseURL: this.appSetting.baseURL,
+      structure: this.structure,
+      addHiddenPages: true,
+    });
     return siteMap;
   };
 

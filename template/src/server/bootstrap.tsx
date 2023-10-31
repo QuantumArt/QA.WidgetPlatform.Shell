@@ -66,6 +66,7 @@ if (serverAppsettings.activeSiteMap) {
       req.url,
       serverAppsettings,
     );
+    res.setHeader('content-type', 'text/xml');
     res.render('sitemap', { pages });
   });
 }

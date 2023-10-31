@@ -22,7 +22,7 @@ async function sitemapBuilder(
     href ?? '',
   );
 
-  const sitemap: PageNode[] = wpRoutesStore.getSiteMap();
+  const sitemap: PageNode[] = wpRoutesStore.getFullSiteMap();
 
   const sitemapList: SitemapPage[] = [];
   const getSitemap = (pages: PageNode[]) => {

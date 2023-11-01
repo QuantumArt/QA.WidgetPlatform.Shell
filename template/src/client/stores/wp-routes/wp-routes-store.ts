@@ -5,6 +5,7 @@ import {
   getBreadcrumbs,
   getSiteMap,
   getTailUrl,
+  SiteMapFilter,
 } from '@quantumart/qp8-widget-platform-shell-core';
 import { WidgetPlatformStore } from 'src/share/stores/widget-platform-context/widget-platform-context-store';
 
@@ -35,17 +36,18 @@ export class WPRoutesStore implements IWPRoutesStore {
       homeTitle: this.homeTitle,
       baseURL: this.appSetting.baseURL,
       structure: this.structure,
+      filter: SiteMapFilter.Navigation,
     });
     return siteMap;
   };
 
-  getFullSiteMap = (maxDeepOrigin?: number): PageNode[] => {
+  getFullSiteMap = (): PageNode[] => {
     const siteMap = getSiteMap({
       maxDeepOrigin: 1000,
       homeTitle: this.homeTitle,
       baseURL: this.appSetting.baseURL,
       structure: this.structure,
-      addHiddenPages: true,
+      filter: SiteMapFilter.SiteMap,
     });
     return siteMap;
   };

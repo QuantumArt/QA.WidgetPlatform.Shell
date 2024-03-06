@@ -3,6 +3,7 @@ import ReactDOMClient from 'react-dom/client';
 import {
   AbstractItemContext,
   EventBusStoreContext,
+  OnScreenArticleContext,
   WPGraphQLClientContext,
   WPRoutesStoreContext,
   ZoneStoreContext,
@@ -32,6 +33,8 @@ import { StaticRouter } from 'react-router-dom/server';
 import stream from 'stream';
 import Zone from '../zone/zone';
 import { HrefContext, useHref } from 'src/share/hooks/url-location';
+import { DivContents } from 'src/client/styles/global.styles';
+import ArticleComponent from '../on-screen/article-component';
 const reactDomServer = typeof window === 'undefined' ? require('react-dom/server') : {};
 
 interface IProps {
@@ -84,7 +87,9 @@ const DynamicZoneServer = (props: IProps): JSX.Element => {
                             <WPRoutesStoreContext.Provider value={wpRoutesStore}>
                               <AbstractItemContext.Provider value={abstractItem}>
                                 <WPGraphQLClientContext.Provider value={graphQLClient}>
-                                  <Zone zoneName={zoneName} />
+                                  <OnScreenArticleContext.Provider value={ArticleComponent}>
+                                    <Zone zoneName={zoneName} />
+                                  </OnScreenArticleContext.Provider>
                                 </WPGraphQLClientContext.Provider>
                               </AbstractItemContext.Provider>
                             </WPRoutesStoreContext.Provider>
@@ -115,13 +120,13 @@ const DynamicZoneServer = (props: IProps): JSX.Element => {
       resultHTML += props.html.slice(index, regExpMatch.index);
       index += regExpMatch.index! + regExpMatch[0].length;
       const zoneName = regExpMatch[1];
-      resultHTML += `<div name="${componentId}" zone="${zoneName}">${await renderZone(
+      resultHTML += `<div name="${componentId}" style="display:contents" data-zone="${zoneName}">${await renderZone(
         zoneName,
       )}</div>`;
     }
     resultHTML += props.html.slice(index, props.html.length);
     return {
-      default: () => <div dangerouslySetInnerHTML={{ __html: resultHTML }} />,
+      default: () => <DivContents dangerouslySetInnerHTML={{ __html: resultHTML }} />,
     };
   };
 
@@ -147,7 +152,10 @@ const DynamicZoneClient = (props: IProps): JSX.Element => {
   const abstractItem = useAbstractItem();
   const graphQLClient = useWPGraphQLClient();
 
-  const resultHTML = props.html.replace(patternZone, `<div name="${componentId}" zone="$1"></div>`);
+  const resultHTML = props.html.replace(
+    patternZone,
+    `<div name="${componentId}" style="display:contents" data-zone="$1"></div>`,
+  );
   React.useEffect(() => {
     for (const element of document.getElementsByName(componentId)) {
       ReactDOMClient.createRoot(element).render(
@@ -162,7 +170,9 @@ const DynamicZoneClient = (props: IProps): JSX.Element => {
                         <WPRoutesStoreContext.Provider value={wpRoutesStore}>
                           <AbstractItemContext.Provider value={abstractItem}>
                             <WPGraphQLClientContext.Provider value={graphQLClient}>
-                              <Zone zoneName={element.getAttribute('zone')!} />
+                              <OnScreenArticleContext.Provider value={ArticleComponent}>
+                                <Zone zoneName={element.getAttribute('data-zone')!} />
+                              </OnScreenArticleContext.Provider>
                             </WPGraphQLClientContext.Provider>
                           </AbstractItemContext.Provider>
                         </WPRoutesStoreContext.Provider>
@@ -178,8 +188,7 @@ const DynamicZoneClient = (props: IProps): JSX.Element => {
     }
   }, [resultHTML]);
 
-  return <div dangerouslySetInnerHTML={{ __html: resultHTML }} />;
-  //return <>{!!props.html && <InnerHTML html={resultHTML} />}</>;
+  return <DivContents dangerouslySetInnerHTML={{ __html: resultHTML }} />;
 };
 
 const DynamicZone = (props: IProps): JSX.Element => {
@@ -190,14 +199,7 @@ const DynamicZone = (props: IProps): JSX.Element => {
       <DynamicZoneClient {...props} />
     );
   }
-  return <div dangerouslySetInnerHTML={{ __html: props.html }} />;
-  //return <>{!!props.html && <InnerHTML html={props.html} />}</>;
-
-  //   return typeof window === 'undefined' ? (
-  //     <div dangerouslySetInnerHTML={{ __html: props.html }} />
-  //   ) : (
-  //     <>{!!props.html && <InnerHTML html={props.html} />}</>
-  //   );
+  return <DivContents dangerouslySetInnerHTML={{ __html: props.html }} />;
 };
 
 export default DynamicZone;

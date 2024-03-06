@@ -1,3 +1,9 @@
+declare module '*.svg' {
+  import * as React from 'react';
+  const content: React.FunctionComponent<React.SVGAttributes<SVGElement>>;
+  export default content;
+}
+
 /***************/
 // declare Window and Global object
 /***************/
@@ -12,7 +18,7 @@ declare namespace NodeJS {
 }
 
 declare namespace globalThis {
-  var clearRoutes: () => void;
+  //var clearRoutes: () => void;
 }
 
 declare interface Window {

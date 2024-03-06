@@ -12,6 +12,7 @@ import {
 } from '@quantumart/qp8-widget-platform-shell-core';
 import { IWPComponentStore } from '../wp-components/wp-component-store';
 import { IGraphQLClient } from '@quantumart/qp8-widget-platform-bridge';
+import { widgetFiledList } from 'src/constants/site-structure-store-init-value';
 
 export class WidgetPlatformStore {
   private componentProps?: undefined | { details: WPComponentProps };
@@ -77,7 +78,14 @@ export class WidgetPlatformStore {
     href: string,
     pageId: number,
   ): Promise<Record<string, WidgetDetails[]>> => {
-    const zones = await getZones(href, pageId, this.wpApi, this.structure, this.pageHierarchy);
+    const zones = await getZones(
+      href,
+      pageId,
+      this.wpApi,
+      this.structure,
+      this.pageHierarchy,
+      widgetFiledList,
+    );
     //Подготавливаем данные для контролов
     await this.convertDetais(href, zones);
     return zones;

@@ -20,7 +20,17 @@
   "baseURL": "/",
   "activeSiteMap": true,
   "activeSplashScreen": false,
-  "useDynamicModules": false,
+  "onScreen": {
+    "active": false,
+    "adminSiteBaseUrl": "https://onscreen.widget-platform.qsupport.ru/",
+    "siteId": "52",
+    "isStage": true,
+    "customerCode": "qa_demosite_rus",
+    "availableFeatures": ["Widgets"],
+    "authCookieName": "qa_onscreen_token",
+    "overrideAbTestStageModeCookieName": "qa_onscreen_abtests_stage"
+  },
+  "useDynamicModules": false,  
   "ssr": {
     "active": true,
     "ttl": 30

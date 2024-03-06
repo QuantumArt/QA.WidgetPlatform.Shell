@@ -9,6 +9,7 @@ import { GraphQLClient } from 'src/share/stores/graphql-client/graphql-client';
 import { IEventBusStore, IGraphQLClient } from '@quantumart/qp8-widget-platform-bridge';
 import { DynamicWPComponentsStore } from 'src/share/stores/wp-components/realizations/dynamic-wpc-store';
 import { IAppSettingsShell } from 'src/share/app-settings-shell';
+import { siteStructureStoreInitValue } from 'src/constants/site-structure-store-init-value';
 
 interface IProps {
   appSettings: IAppSettingsShell;
@@ -31,7 +32,7 @@ const prepareServerApp = async (href: string, appSettings: IAppSettingsShell): P
     : new StaticWPComponentsStore();
 
   const siteStructureStore = new SiteStructureStore(wpApiStore, appSettings, Page, NotFoundPage);
-  await siteStructureStore.init();
+  await siteStructureStore.init(siteStructureStoreInitValue);
 
   const graphQLClient = new GraphQLClient(appSettings.widgetsPlatform?.graphql);
 

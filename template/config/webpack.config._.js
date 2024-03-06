@@ -11,6 +11,11 @@ const webpackConfig = env => ({
       src: path.resolve(__dirname, '../src/'),
     },
   },
+  performance: {
+    hints: false,
+    maxEntrypointSize: 1024000,
+    maxAssetSize: 1024000,
+  },
   module: {
     rules: [
       {
@@ -19,6 +24,7 @@ const webpackConfig = env => ({
         exclude: /node_modules/,
         options: {
           presets: [['@babel/preset-react', { runtime: 'automatic' }], '@babel/preset-typescript'],
+          plugins: [['styled-components', { ssr: true }]],
         },
       },
       {
@@ -59,6 +65,38 @@ const webpackConfig = env => ({
                 },
               },
             ],
+          },
+        ],
+      },
+      {
+        test: /\.svg?$/,
+        oneOf: [
+          {
+            issuer: /\.tsx?$/,
+            use: {
+              loader: '@svgr/webpack',
+              options: {
+                svgoConfig: {
+                  plugins: [
+                    {
+                      name: 'preset-default',
+                      params: {
+                        overrides: {
+                          removeViewBox: false,
+                        },
+                      },
+                    },
+                    {
+                      name: 'prefixIds',
+                      active: true,
+                    },
+                  ],
+                },
+              },
+            },
+          },
+          {
+            use: '@svgr/webpack',
           },
         ],
       },

@@ -9,6 +9,7 @@ import { HrefContext } from 'src/share/hooks/url-location';
 import { ServerStyleSheet } from 'styled-components';
 import { IAppSettingsShell } from 'src/share/app-settings-shell';
 import prepareServerApp from './prepare-server-app';
+import trim from 'lodash/trim';
 
 export interface ISiteModel {
   html: string;
@@ -35,7 +36,7 @@ async function bodyBuilder(
       };
 
       echoStream.addListener('finish', () => {
-        resolve(Buffer.concat(buffer).toString('utf8'));
+        resolve(buffer.reduce((acum, item) => acum + trim(item.toString('utf8'), '\x00'), ''));
       });
 
       const pipeableStream = renderToPipeableStream(

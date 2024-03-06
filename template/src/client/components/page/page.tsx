@@ -20,7 +20,10 @@ import { WPComponentProps } from 'src/share/stores/wp-components/models/wp-compo
 import { WPRoutesStore } from 'src/client/stores/wp-routes/wp-routes-store';
 import { useHref } from 'src/share/hooks/url-location';
 import { PageItemStore } from 'src/client/stores/abstract-item/page-item-store';
+import { Helmet } from 'react-helmet-async';
 import NotFoundPage from '../not-found-page/not-found-page';
+import { getMeta } from 'src/utilities/get-meta';
+import OnScreen from '../on-screen/on-screen';
 
 interface IProps {
   node: SiteNode;
@@ -71,19 +74,28 @@ const Page = (props: IProps): JSX.Element => {
     return <NotFoundPage />;
   }
 
+  const metaData = getMeta(wpProps);
   if (!!wpProps && !!itemStore) {
     return (
-      <ZoneStoreContext.Provider value={zoneStore}>
-        <WPItemStoreContext.Provider value={itemStore}>
-          <WPRoutesStoreContext.Provider value={wpRoutesStore}>
-            <AbstractItemContext.Provider value={abstractItemStore}>
-              <Layout key={`${props.node.id}-${tailUrl}`}>
-                <WPComponent key={`${props.node.id}-${tailUrl}`} {...wpProps} />
-              </Layout>
-            </AbstractItemContext.Provider>
-          </WPRoutesStoreContext.Provider>
-        </WPItemStoreContext.Provider>
-      </ZoneStoreContext.Provider>
+      <>
+        <Helmet>
+          <title>{metaData.title}</title>
+          {!!metaData.keywords && <meta name="keywords" content={metaData.keywords} />}
+          {!!metaData.description && <meta name="description" content={metaData.description} />}
+        </Helmet>
+        <ZoneStoreContext.Provider value={zoneStore}>
+          <WPItemStoreContext.Provider value={itemStore}>
+            <WPRoutesStoreContext.Provider value={wpRoutesStore}>
+              <AbstractItemContext.Provider value={abstractItemStore}>
+                <OnScreen />
+                <Layout key={`${props.node.id}-${tailUrl}`}>
+                  <WPComponent key={`${props.node.id}-${tailUrl}`} {...wpProps} />
+                </Layout>
+              </AbstractItemContext.Provider>
+            </WPRoutesStoreContext.Provider>
+          </WPItemStoreContext.Provider>
+        </ZoneStoreContext.Provider>
+      </>
     );
   }
   return <Loader />;

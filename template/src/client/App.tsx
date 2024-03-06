@@ -18,12 +18,14 @@ import {
   EventBusStoreContext,
   IEventBusStore,
   IGraphQLClient,
+  OnScreenArticleContext,
   WPGraphQLClientContext,
 } from '@quantumart/qp8-widget-platform-bridge';
 import { SplashScreen } from './components/splash-screen/splash-screen';
 import { NormalizeStyles } from './styles/normalize.styles';
 import { GlobalStyle } from './styles/global.styles';
 import { IAppSettingsShell } from 'src/share/app-settings-shell';
+import ArticleComponent from './components/on-screen/article-component';
 
 interface IProps {
   appSettings: IAppSettingsShell;
@@ -57,11 +59,13 @@ const App = (props: IProps) => {
             <SiteStructureStoreContext.Provider value={props.siteStructureStore}>
               <WPComponentsStoreContext.Provider value={props.widgetsStore}>
                 <WPGraphQLClientContext.Provider value={props.graphQLClient}>
-                  <NormalizeStyles />
-                  <GlobalStyle />
-                  <SplashScreen active={props.appSettings.activeSplashScreen ?? false}>
-                    <SiteRoutes routes={props.siteStructureStore.routes} />
-                  </SplashScreen>
+                  <OnScreenArticleContext.Provider value={ArticleComponent}>
+                    <NormalizeStyles />
+                    <GlobalStyle />
+                    <SplashScreen active={props.appSettings.activeSplashScreen ?? false}>
+                      <SiteRoutes routes={props.siteStructureStore.routes} />
+                    </SplashScreen>
+                  </OnScreenArticleContext.Provider>
                 </WPGraphQLClientContext.Provider>
               </WPComponentsStoreContext.Provider>
             </SiteStructureStoreContext.Provider>

@@ -22,13 +22,11 @@
   "activeSplashScreen": false,
   "onScreen": {
     "active": false,
-    "adminSiteBaseUrl": "https://onscreen.widget-platform.qsupport.ru/",
-    "siteId": "52",
+    "adminSiteBaseUrl": "https://onscreen.widget-platform.dev.qsupport.ru/",
     "isStage": true,
-    "customerCode": "qa_demosite_rus",
     "availableFeatures": ["Widgets"],
-    "authCookieName": "qa_onscreen_token",
-    "overrideAbTestStageModeCookieName": "qa_onscreen_abtests_stage"
+    "overrideAbTestStageModeCookieName": "qa_onscreen_abtests_stage",
+    "mutationWatcherElementId": "root"
   },
   "useDynamicModules": false,  
   "ssr": {

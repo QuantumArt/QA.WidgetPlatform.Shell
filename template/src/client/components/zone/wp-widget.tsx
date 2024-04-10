@@ -1,13 +1,14 @@
 import React from 'react';
-import { WidgetDetails, useAppSettingsShell } from '@quantumart/qp8-widget-platform-shell-core';
+import { useAppSettingsShell } from '@quantumart/qp8-widget-platform-shell-core';
 import { ZoneStore } from 'src/client/stores/zone/zone-store';
 import { useWpcStore } from 'src/share/stores/wp-components/wp-component-store';
 import { AbstractItemContext, ZoneStoreContext } from '@quantumart/qp8-widget-platform-bridge';
 import { WPItemStore, WPItemStoreContext } from 'src/client/stores/wp-item/wp-item-store';
 import { WidgetItemStore } from 'src/client/stores/abstract-item/widget-item-store';
+import { WPWidgetDetails } from 'src/types/wp-widget-details';
 
 interface IProps {
-  widgetDetails: WidgetDetails;
+  widgetDetails: WPWidgetDetails;
 }
 
 const WPWidget = ({ widgetDetails }: IProps): JSX.Element => {
@@ -39,7 +40,7 @@ const WPWidget = ({ widgetDetails }: IProps): JSX.Element => {
     <ZoneStoreContext.Provider value={zoneStore}>
       <WPItemStoreContext.Provider value={itemStore}>
         <AbstractItemContext.Provider value={abstractItemStore}>
-          <WPComponent key={widgetDetails.id} {...widgetDetails.details} />
+          <WPComponent key={widgetDetails.id} {...widgetDetails.staticProps} />
         </AbstractItemContext.Provider>
       </WPItemStoreContext.Provider>
     </ZoneStoreContext.Provider>

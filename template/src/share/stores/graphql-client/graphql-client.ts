@@ -20,13 +20,9 @@ export class GraphQLClient implements IGraphQLClient {
       if (!!settingsGraphql.apiKey) {
         headers.apiKey = settingsGraphql.apiKey;
       }
-      const link = new HttpLink({
-        uri: settingsGraphql.apiUrl,
-        credentials: 'include',
-        headers: headers,
-      });
       this.apolloClient = new ApolloClient<NormalizedCacheObject>({
-        link: link,
+        uri: settingsGraphql.apiUrl,
+        headers: headers,
         cache: new InMemoryCache(),
       });
     }

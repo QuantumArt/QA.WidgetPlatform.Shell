@@ -10,18 +10,14 @@ export interface IOnScreenConfigurationOptions {
   active: boolean;
   // Урл компонента Onscreen API (админка onscreen), который работает с тем же QP, что и сайт
   adminSiteBaseUrl: string;
-  // Id сайта в QP
-  siteId: number;
   // Режим Stage
   isStage: boolean;
-  // Кастомер-код базы сайта в QP
-  customerCode: string;
   // Фичи режима onscreen, которые нужно включить
   availableFeatures: AvailableFeatures[];
-  // Имя куки, в которой хранится информация об аутентификации onscreen
-  authCookieName: string;
   // Имя куки, в которой хранится переопределенная для режима аб-тестов настройка isStage
   overrideAbTestStageModeCookieName: string;
+  // Id жлемента для отслеживания изменений
+  mutationWatcherElementId?: string;
 }
 
 export interface IAppSettingsShell extends IAppSettingsShellCore {

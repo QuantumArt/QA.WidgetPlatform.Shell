@@ -23,7 +23,7 @@ import { PageItemStore } from 'src/client/stores/abstract-item/page-item-store';
 import { Helmet } from 'react-helmet-async';
 import NotFoundPage from '../not-found-page/not-found-page';
 import { getMeta } from 'src/utilities/get-meta';
-import OnScreen from '../on-screen/on-screen';
+import OnScreenPage from '../on-screen/on-screen-page';
 
 interface IProps {
   node: SiteNode;
@@ -87,7 +87,7 @@ const Page = (props: IProps): JSX.Element => {
           <WPItemStoreContext.Provider value={itemStore}>
             <WPRoutesStoreContext.Provider value={wpRoutesStore}>
               <AbstractItemContext.Provider value={abstractItemStore}>
-                <OnScreen />
+                <OnScreenPage />
                 <Layout key={`${props.node.id}-${tailUrl}`}>
                   <WPComponent key={`${props.node.id}-${tailUrl}`} {...wpProps} />
                 </Layout>

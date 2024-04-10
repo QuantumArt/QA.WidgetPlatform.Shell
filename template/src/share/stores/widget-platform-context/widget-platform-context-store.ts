@@ -13,6 +13,7 @@ import {
 import { IWPComponentStore } from '../wp-components/wp-component-store';
 import { IGraphQLClient } from '@quantumart/qp8-widget-platform-bridge';
 import { widgetFiledList } from 'src/constants/site-structure-store-init-value';
+import { WPWidgetDetails } from 'src/types/wp-widget-details';
 
 export class WidgetPlatformStore {
   private componentProps?: undefined | { details: WPComponentProps };
@@ -123,7 +124,7 @@ export class WidgetPlatformStore {
 
   private convertDetais = async (
     href: string,
-    zones: Record<string, WidgetDetails[]>,
+    zones: Record<string, WPWidgetDetails[]>,
   ): Promise<void> => {
     for (const zoneName in zones) {
       for (const widget of zones[zoneName]) {

@@ -4,5 +4,5 @@ export const GlobalStyle = createGlobalStyle`
 `;
 
 export const DivContents = styled.div`
-  display: 'contents';
+  display: contents;
 `;

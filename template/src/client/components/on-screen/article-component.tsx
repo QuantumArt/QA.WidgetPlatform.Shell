@@ -8,7 +8,7 @@ const ArticleComponent = (props: IOnScreenArticleComponentProps): JSX.Element =>
       key={props.contentId}
       info={`article`}
       data={{
-        id: props.contentId,
+        id: props.id,
         title: props.title,
         contentId: props.contentId,
         published: props.published,

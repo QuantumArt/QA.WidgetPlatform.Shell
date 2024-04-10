@@ -12,7 +12,7 @@ interface IProps<T extends object> {
 const OnScreenBlock = <T extends object>(props: IProps<T>) => {
   const appSettingsShell = useAppSettingsShell() as IAppSettingsShell;
   const contents = React.createRef<HTMLDivElement>();
-  React.useLayoutEffect(() => {
+  React.useEffect(() => {
     if (!contents.current) {
       return;
     }

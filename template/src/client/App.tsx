@@ -26,6 +26,7 @@ import { NormalizeStyles } from './styles/normalize.styles';
 import { GlobalStyle } from './styles/global.styles';
 import { IAppSettingsShell } from 'src/share/app-settings-shell';
 import ArticleComponent from './components/on-screen/article-component';
+import OnScreen from './components/on-screen/on-screen';
 
 interface IProps {
   appSettings: IAppSettingsShell;
@@ -62,6 +63,7 @@ const App = (props: IProps) => {
                   <OnScreenArticleContext.Provider value={ArticleComponent}>
                     <NormalizeStyles />
                     <GlobalStyle />
+                    <OnScreen />
                     <SplashScreen active={props.appSettings.activeSplashScreen ?? false}>
                       <SiteRoutes routes={props.siteStructureStore.routes} />
                     </SplashScreen>
